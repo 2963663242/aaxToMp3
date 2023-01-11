@@ -36,6 +36,8 @@ AudibleConvert::AudibleConvert(QString settingsPath)
 AudibleMeta AudibleConvert::getMeta(QString filepath)
 {
     AudibleMeta meta;
+    QByteArray cover_data = "";
+    QString coverpath = "";
     QProcess process;
     process.start(this->EXE, { "-i", filepath, "-hide_banner" });
     process.waitForFinished();
@@ -73,24 +75,79 @@ AudibleMeta AudibleConvert::getMeta(QString filepath)
         if (!comment.isEmpty())
             meta.comments = comment;
 
-        QString coverpath = QDir(setting.coverpath).absoluteFilePath(getmd5(filepath) + ".jpg");
+        coverpath = QDir(setting.coverpath).absoluteFilePath(getmd5(filepath) + ".jpg");
         qDebug() << coverpath;
         
         QString typ = this->check_type(filepath);
-        QByteArray cover_data = "";
+        
         if (typ == "aax")
         {
             cover_data = get_cover_from_aax(filepath);
         }
         else if (typ == "aa") {
-
+            cover_data = get_cover_from_aa(filepath);
         }
         
     }
 
+    if (!cover_data.isEmpty()) {
+        QFile f(coverpath);
+        f.open(QIODevice::WriteOnly);
+        f.write(cover_data);
+        meta._AudibleMeta__cover = coverpath;
+    }
+
+    QString duration = get_meta_one(output, "Duration: ", ",");
+    meta.duration = duration;
+    QString checksum = get_meta_one(output, "checksum == ");
+    meta.checksum = checksum;
+    
+    return meta;
+}
+QString AudibleConvert::seek_code(QString checksum)
+{   
+    if (this->d.isEmpty()) {
+        QFile file(this->CFGFILE);
+        if (file.open(QIODevice::ReadOnly)) {
+
+        }
+    }
     
 
-    return meta;
+    return QString();
+}
+QString AudibleConvert::compute(QString checksum)
+{
+    
+    if (QDir::separator() == '\\') {
+        QProcess process;
+        process.start("bin\\win_rcrack.exe", { "bin\\tables", "-h", checksum });
+        process.waitForStarted();
+        process.waitForFinished(-1);
+        QString output = process.readAllStandardOutput().data();
+        output = output.simplified();
+        QString code = output.mid(output.length() - 8);
+        if (this->verify_code(code))
+            return code;
+        return "";
+    }
+    else {
+        QProcess process;
+        process.start("bin/mac_rcrack", { 
+            "bin/tables/audible_byte#4-4_0_10000x1362345_0.rt",
+            "bin/tables/audible_byte#4-4_1_10000x1362345_0.rt",
+            "bin/tables/audible_byte#4-4_2_10000x1362345_0.rt",
+            "bin/tables/audible_byte#4-4_3_10000x1362345_0.rt",
+           "-h",checksum});
+        process.waitForStarted();
+        process.waitForFinished(-1);
+        QString output = process.readAllStandardOutput().data();
+        output = output.simplified();
+        QString code = output.mid(output.length() - 8);
+        if (this->verify_code(code))
+            return code;
+        return "";
+    }
 }
 QString AudibleConvert::check_type(QString filepath) {
     
@@ -108,6 +165,18 @@ QString AudibleConvert::check_type(QString filepath) {
     }
 }
 
+bool AudibleConvert::verify_code(QString code)
+{
+    QString str = "0123456789abcdefabcdef";
+    
+    for each (QChar c in code)
+    {
+        if (str.indexOf(c)==-1)
+            return false;
+    }
+    return true;
+}
+
 
 QString get_meta_one(QString info, QString meta, QString endstr) {
     if (info.indexOf(meta) > 0) {
@@ -116,8 +185,8 @@ QString get_meta_one(QString info, QString meta, QString endstr) {
         if (end > start) {
             if (info[end - 1] == '\r') {
                 end -= 1;
-                return info.mid(start, end-start);
             }
+            return info.mid(start, end - start);
         }
     }
     return "";

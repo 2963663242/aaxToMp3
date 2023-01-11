@@ -40,8 +40,8 @@ QByteArray get_cover_from_aax(QString aaxfile)
 			
 			QByteArray chunk = file.read(length);
 			index += length;
-			pre.append(chunk);
-			int finded = pre.indexOf(flag);
+
+			int finded = (pre+ chunk).indexOf(flag);
 			if (finded != -1) {
 				index += finded - length - flag.length();
 				break;
@@ -58,6 +58,49 @@ QByteArray get_cover_from_aax(QString aaxfile)
 			cover_data = file.read(cover_size);
 		}
 		file.close();
+	}
+
+	return cover_data;
+}
+
+QByteArray get_cover_from_aa(QString aafile)
+{
+	QByteArray magic_jfif = "\xff\xd8\xff\xe0\x00\x10JFIF";
+	QByteArray magic_exif = "\xff\xd8\xff\xe1\x00\x18";
+	magic_exif = magic_exif.append("Exif");
+
+	QByteArray flagAry[] = { magic_exif, magic_jfif };
+	QByteArray cover_data = "";
+	int length = 4096;
+	int count = 0;
+
+	QFile f(aafile);
+	f.open(QIODevice::ReadOnly);
+	
+	for each (QByteArray flag in  flagAry)
+	{
+		f.seek(0);
+		if (!cover_data.isEmpty())
+			break;
+		else {
+			QByteArray pre = "";
+			count = f.size();
+			int index = 0;
+			while (index < count)
+			{
+				QByteArray chunk = f.read(length);
+				if (!cover_data.isEmpty())
+					cover_data += chunk;
+				else {
+					int finded = (pre + chunk).indexOf(flag);
+					if (finded != -1)
+						cover_data = (pre + chunk).mid(finded);
+					pre = chunk.mid(chunk.length() - flag.length());
+				}
+
+			}
+
+		}
 	}
 
 	return cover_data;

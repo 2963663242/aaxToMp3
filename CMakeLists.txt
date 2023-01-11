@@ -14,16 +14,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_subdirectory(src/libAudibleConverter)
 
 
-# 打印所有变量 
-function(print_directory_variables dir)
-    # Dump variables:
-    get_property(_variableNames DIRECTORY ${dir} PROPERTY VARIABLES)
-    list (SORT _variableNames)
-    foreach (_variableName ${_variableNames})
-        get_directory_property(_variableValue DIRECTORY ${dir} DEFINITION ${_variableName})
-        message(STATUS "DIR ${dir}: ${_variableName}=${_variableValue}")
-    endforeach()
-endfunction(print_directory_variables)
+# # 打印所有变量 
+# function(print_directory_variables dir)
+#     # Dump variables:
+#     get_property(_variableNames DIRECTORY ${dir} PROPERTY VARIABLES)
+#     list (SORT _variableNames)
+#     foreach (_variableName ${_variableNames})
+#         get_directory_property(_variableValue DIRECTORY ${dir} DEFINITION ${_variableName})
+#         message(STATUS "DIR ${dir}: ${_variableName}=${_variableValue}")
+#     endforeach()
+# endfunction(print_directory_variables)
 
-# for example
-print_directory_variables(.)
+# # for example
+# print_directory_variables(.)

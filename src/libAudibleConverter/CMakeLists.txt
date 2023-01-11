@@ -22,3 +22,5 @@ add_custom_command(
   COMMAND xcopy  "\"$(SolutionDir)../sdk/win/bin\"" "\"$(OutDir)\""  /E /Y
   )
   
+set_target_properties(libAudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
