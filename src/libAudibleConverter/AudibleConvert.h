@@ -18,6 +18,7 @@ public:
 	static bool verify_code(QString code);
 	static QString validate_title(QString title);
 	static int timestamp(QString output);
+	static bool set_m4b_cover(QString filepath, QString cover);
 private:
 	QString settingsPath;
 	QString EXE;

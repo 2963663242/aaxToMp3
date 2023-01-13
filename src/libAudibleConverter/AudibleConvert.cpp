@@ -29,8 +29,9 @@ AudibleConvert::AudibleConvert(QString settingsPath)
         if (data.open(QFile::WriteOnly | QIODevice::Truncate)) {
             QTextStream out(&data);
             out << jsonDoc.toJson();
+            data.close();
         }
-        data.close();
+        
     }
 }
 AudibleMeta AudibleConvert::getMeta(QString filepath)
@@ -382,6 +383,72 @@ int AudibleConvert::timestamp(QString output)
     }
 
     return 0;
+}
+
+bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
+{
+    QString name = QFileInfo(filepath).fileName();
+    QString tmpfile = QDir::tempPath() + QDir::separator() + name;
+    QFile aaxFile(filepath), covFile(cover);
+    if (aaxFile.open(QIODevice::ReadOnly) && covFile.open(QIODevice::ReadOnly)) {
+        
+        bool ok;
+        QByteArray out = aaxFile.readAll();
+        QByteArray cov = covFile.readAll();
+        int cov_len = cov.length();
+        
+        int idx_moov = out.lastIndexOf("moov");
+        QByteArray old_moov_bytes = out.mid(idx_moov - 4, 4);
+        int old_moov_size = old_moov_bytes.toHex().toInt(&ok, 16);
+        int new_moov_size = old_moov_size + cov_len + 24;
+        QByteArray new_moov_bytes = QByteArray::fromHex(QString::asprintf("%08x", new_moov_size).toUtf8());
+        out = out.mid(0, idx_moov - 4) + new_moov_bytes + out.mid(idx_moov);
+        
+        int idx_meta = out.indexOf("meta", idx_moov);
+        QByteArray old_meta_bytes = out.mid(idx_meta - 4, 4);
+        int old_meta_size = old_meta_bytes.toHex().toInt(&ok, 16);
+        int new_meta_size = old_meta_size + cov_len + 24;
+        QByteArray new_meta_bytes = QByteArray::fromHex(QString::asprintf("%08x", new_meta_size).toUtf8());
+        out = out.mid(0, idx_meta - 4) + new_meta_bytes + out.mid(idx_meta);
+
+        int idx_udta = out.indexOf("udta", idx_moov);
+        QByteArray old_udta_bytes = out.mid(idx_udta - 4, 4);
+        int old_udta_size = old_udta_bytes.toHex().toInt(&ok, 16);
+        int new_udta_size = old_udta_size + cov_len + 24;
+        QByteArray new_udta_bytes = QByteArray::fromHex(QString::asprintf("%08x", new_udta_size).toUtf8());
+        out = out.mid(0, idx_udta - 4) + new_udta_bytes + out.mid(idx_udta);
+
+        int idx_ilst = out.indexOf("ilst", idx_udta);
+        QByteArray old_ilst_bytes = out.mid(idx_ilst - 4, 4);
+        int old_ilst_size = old_ilst_bytes.toHex().toInt(&ok, 16);
+        int new_ilst_size = old_ilst_size + cov_len + 24;
+        QByteArray new_ilst_bytes = QByteArray::fromHex(QString::asprintf("%08x", new_ilst_size).toUtf8());
+        out = out.mid(0, idx_ilst - 4) + new_ilst_bytes + out.mid(idx_ilst);
+
+        int idx_chpl = out.indexOf("chpl", idx_ilst);
+        if (idx_chpl != -1) {
+            QByteArray covr_len_bytes = QByteArray::fromHex(QString::asprintf("%08x", cov_len + 24).toUtf8());
+            QByteArray data_len_bytes = QByteArray::fromHex(QString::asprintf("%08x", cov_len + 24 - 8).toUtf8());
+            QByteArray covr_box_bytes = covr_len_bytes + "covr" + data_len_bytes + "data" + QByteArray("\x00\x00\x00\r\x00\x00\x00\x00", 8) + cov;
+
+            out = out.mid(0, idx_chpl - 4) + covr_box_bytes + out.mid(idx_chpl - 4);
+
+            QFile data(tmpfile);
+            if (data.open(QFile::WriteOnly | QIODevice::Truncate)) {
+                data.write(out);
+                data.close();
+                aaxFile.close();
+                covFile.close();
+                QFile::remove(filepath);
+                QFile::rename(tmpfile, filepath);
+                QFile::remove(tmpfile);
+                return true;
+            }
+           
+        }
+    }
+
+    return false;
 }
 
 
