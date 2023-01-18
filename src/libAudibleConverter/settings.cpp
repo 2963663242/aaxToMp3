@@ -5,6 +5,7 @@
 #include <qDebug>
 #include <QDir>
 
+#define CLASSNAME "EpuborAudible"
 
 settings setting;
 
@@ -22,7 +23,7 @@ settings::settings()
 // win
 	QString confpath =  QProcessEnvironment::systemEnvironment().value("APPDATA");
 	QString homepath = QDir::homePath();
-	this->coverpath = confpath + "\\EpuborAudible\\cover\\";
+	this->coverpath = confpath + "\\"+ CLASSNAME +"\\cover\\";
 #endif
-	qDebug() << confpath;
+	outputPath = homepath + QDir::separator() + CLASSNAME;
 }

@@ -2,6 +2,11 @@
 #include <QJsonObject>
 #include <AudibleMeta.h>
 
+
+enum convparam {
+	SINGLE,
+	CHAPTERS,
+};
 class AudibleConvert {
 	
 public:
@@ -13,6 +18,7 @@ public:
 	bool set_mp3_meta(QString filepath, AudibleMeta meta);
 	bool set_m4b_meta(QString filepath, AudibleMeta meta);
 	bool set_mp3_cover(QString filepath, QString cover);
+	QString process(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3");
 public:
 	static QString check_type(QString filepath);
 	static bool verify_code(QString code);
@@ -25,3 +31,5 @@ private:
 	QString CFGFILE;
 	QJsonObject d;
 };
+
+

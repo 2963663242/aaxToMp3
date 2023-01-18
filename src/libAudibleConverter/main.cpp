@@ -16,7 +16,9 @@ int main(int argc, char *argv[])
     converter.get_chapters(filePath);
     */
     //converter.set_mp3_meta(R"(‪D:\Users\Documents\10.So Far Away (SUGA, 진, 정국 Ver.).mp3)", meta);
-    AudibleConvert::set_m4b_cover(m4bPath, coverPath);
+    //AudibleConvert::set_m4b_cover(m4bPath, coverPath);
+    converter.process(meta, filePath,convparam::CHAPTERS);
 
+    
     return a.exec();
 }

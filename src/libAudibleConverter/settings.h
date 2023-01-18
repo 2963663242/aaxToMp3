@@ -8,7 +8,7 @@ public:
 
 public:
 	 QString coverpath;
-
+	 QString outputPath;
 };
 
 

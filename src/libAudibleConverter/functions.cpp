@@ -105,3 +105,33 @@ QByteArray get_cover_from_aa(QString aafile)
 
 	return cover_data;
 }
+
+QString choosename(QString filepath) {
+	int i = 1;
+	while (true) {
+		if (!QFileInfo(filepath).exists())
+			return filepath;
+		QString tmppath = filepath.mid(0,filepath.length() - 4) + " (" + QString::asprintf("%d", i) + ")" + filepath.mid(filepath.length() - 4);
+		if (!QFileInfo(tmppath).exists())
+			return tmppath;
+		i += 1;
+	}
+}
+/*
+	数值递增的创建目录（如果目录已经存在）
+*/
+QString mkdir(QString path) {
+	int i = 1;
+	while (true) {
+		if (!QDir(path).exists()) {
+			QDir().mkpath(path);
+			return path;
+		}
+		QString tmpdirname = path + " (" + QString::asprintf("%d", i) + ")";
+		if (!QDir(tmpdirname).exists()) {
+			QDir().mkpath(tmpdirname);
+			return tmpdirname;
+		}
+		i += 1;
+	}
+}

@@ -331,6 +331,157 @@ bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
    
 }
 
+QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam convp, QString ext)
+{
+    double progress = 0.0;
+    float hours = 0, mins = 0, secs = 0;
+    QString strDuration = meta.duration;
+    QStringList timeList = strDuration.split(":");
+    if (timeList.length() == 3)
+    {
+        hours = timeList[0].toFloat();
+        mins = timeList[1].toFloat();
+        secs = timeList[2].toFloat();
+    }
+    float duration = secs + 60 * mins + 3600 * hours;
+    QList<QList<float>> split_points;
+    if (convp == convparam::SINGLE) {
+        split_points.append(QList<float>({0,duration}));
+    }
+    else {
+        split_points = this->get_chapters(filepath);
+    }
+
+    QString mime = this->check_type(filepath);
+    if (split_points.length() == 1) {
+        QString  outname = this->validate_title(meta.title) + ext;
+        QString outpath = setting.outputPath + QDir::separator() + outname;
+        if (outpath.length() > 240)
+            outpath = outpath.mid(0, 240) + ext;
+        outpath = choosename(outpath);
+        QStringList args;
+        if (mime == "aa") {
+            args += { "-y", "-i", filepath, outpath};
+        }
+        else {
+            QString act_code = this->seek_code(meta.checksum);
+            if(ext.toLower() == ".m4b")
+                args += { "-y", "-activation_bytes", act_code, "-i", filepath, "-vn", "-c:a", "copy", outpath };
+            else
+                args += { "-y", "-activation_bytes", act_code, "-i", filepath, "-vn", outpath };
+        }
+
+        QProcess process;
+        QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
+            QString content = process.readAllStandardError().data();
+            if (content.indexOf("size=") == -1) return;
+            double _progress = this->timestamp(content) / duration * 100;
+            if (_progress < progress) return;
+            progress = _progress;
+            qDebug() << "process: " << progress;
+            });
+        process.start(this->EXE, args);
+        process.waitForFinished();
+        int code = process.exitCode();
+        if (code != 0)
+            return "";
+
+        if (ext == ".mp3") {
+            this->set_mp3_meta(outpath, meta);
+            this->set_mp3_cover(outpath, meta.cover());
+        }
+        else {
+            this->set_m4b_meta(outpath, meta);
+            this->set_m4b_cover(outpath, meta.cover());
+        }
+        return outpath;
+    }
+    QString name = this->validate_title(meta.title);
+    QString outdir = setting.outputPath + QDir::separator() + name.mid(0, 20);
+    outdir = mkdir(outdir);
+    QList<QList<QString>> cmds;
+    if (mime == "aa") {
+        int idx = 0;
+        for each (QList<float> item_ in split_points) {
+            QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
+            QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
+            int path_length = secure_outpath.length();
+            if (path_length > 245)
+                secure_outpath = outdir + QDir::separator() +
+                name.mid(0, 245) + QString::asprintf("--%04d", (idx + 1)) + ext;
+            cmds.append({ "-y", "-i", filepath, "-ss", QString::asprintf("%f",item_[0]), "-t",QString::asprintf("%f", item_[1] - item_[0]), "-metadata",
+                QString::asprintf("title=%s",title), secure_outpath });
+            idx++;
+        }
+
+    }
+    else {
+        QString act_code = this->seek_code(meta.checksum);
+        if (ext.toLower() == ".m4b") {
+            int idx = 0;
+            for each (QList<float> item_ in split_points) {
+                QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
+                QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
+                int path_length = secure_outpath.length();
+                if (path_length > 245)
+                    secure_outpath = outdir + QDir::separator() +
+                    name.mid(0, 245) + QString::asprintf("--%04d", (idx + 1)) + ext;
+                cmds.append({"-y", "-activation_bytes", act_code, "-i", filepath, "-ss", QString::asprintf("%f", item_[0]), "-t", QString::asprintf("%f", item_[1] - item_[0]), "-vn", "-c:a", "copy", "-metadata",
+                    title, "-metadata", "album=" + meta.album, "-metadata", "artist=" + meta.artist, "-metadata", "copyright=" + meta.copyright, "-metadata", "date=" + meta.year, "-metadata", "genre=" + meta.genre, "-metadata", "comment=" + meta.comments, secure_outpath});
+                idx++;
+            };
+                
+         }
+        else {
+            int idx = 0;
+            for each (QList<float> item_ in split_points) {
+                QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
+                QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
+                int path_length = secure_outpath.length();
+                if (path_length > 245)
+                    secure_outpath = outdir + QDir::separator() +
+                    name.mid(0, 245) + QString::asprintf("--%04d", (idx + 1)) + ext;
+                cmds.append({"-y", "-activation_bytes", act_code, "-i", filepath, "-ss", QString::asprintf("%f", item_[0]), "-t",
+                    QString::asprintf("%f", item_[1] - item_[0]), "-vn", "-id3v2_version", "3", "-metadata", title,
+                    "-metadata", "album=" + meta.album, "-metadata", "artist=" + meta.artist,
+                    "-metadata", "copyright=" + meta.copyright, "-metadata", "date=" + meta.year,
+                    "-metadata", "genre=" + meta.genre, "-metadata", "comment=" + meta.comments,
+                    secure_outpath});
+                idx++;
+            };
+
+        }
+        
+    }
+    int idx = 0;
+    for each (QList<QString> cmd in cmds) {
+        QProcess process;
+        QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
+            QString content = process.readAllStandardError().data();
+            if (content.indexOf("size=") == -1) return;
+            double _progress = (this->timestamp(content) + split_points[idx][0]) / duration * 100;
+            if (_progress < progress) return;
+            progress = _progress;
+            qDebug() << "process: " << progress;
+            });
+        process.start(this->EXE,cmd);
+        process.waitForFinished();
+        int code = process.exitCode();
+        if (code != 0)
+            return "";
+        idx++;
+    }
+    QStringList files = QDir(outdir).entryList(QDir::Files);
+    for each (QString f in files) {
+        if (ext == ".mp3")
+            this->set_mp3_cover(outdir + QDir::separator() + f, meta.cover());
+        else
+            this->set_m4b_cover(outdir + QDir::separator() + f, meta.cover());
+    }
+
+    return outdir;
+}
+
 QString AudibleConvert::check_type(QString filepath) {
     
     char bs[12] = {0,};
@@ -378,7 +529,7 @@ int AudibleConvert::timestamp(QString output)
         resultSet.append(rx.cap(2));
         resultSet.append(rx.cap(3));
     }
-    if (resultSet.count() == 3) {
+    if (resultSet.count() >= 3) {
         return resultSet[0].toInt() * 3600 + resultSet[1].toInt() * 60 + resultSet[2].toInt();
     }
 
