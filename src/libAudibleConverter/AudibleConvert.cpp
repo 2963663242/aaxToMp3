@@ -333,6 +333,10 @@ bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
 
 QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam convp, QString ext)
 {
+    this->mtx.lock();
+    this->isConverting = true;
+    this->mtx.unlock();
+    ItemTable item;
     double progress = 0.0;
     float hours = 0, mins = 0, secs = 0;
     QString strDuration = meta.duration;
@@ -372,13 +376,19 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         }
 
         QProcess process;
+        
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill,Qt::DirectConnection);
         QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
             QString content = process.readAllStandardError().data();
             if (content.indexOf("size=") == -1) return;
             double _progress = this->timestamp(content) / duration * 100;
             if (_progress < progress) return;
             progress = _progress;
-            qDebug() << "process: " << progress;
+      
+            item.st = status::downloading;
+            item.rate = progress;
+            if (this->callback != 0)
+                callback->stateInform(item);
             });
         process.start(this->EXE, args);
         process.waitForFinished();
@@ -456,13 +466,18 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     int idx = 0;
     for each (QList<QString> cmd in cmds) {
         QProcess process;
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill,Qt::DirectConnection);
         QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
             QString content = process.readAllStandardError().data();
             if (content.indexOf("size=") == -1) return;
             double _progress = (this->timestamp(content) + split_points[idx][0]) / duration * 100;
             if (_progress < progress) return;
             progress = _progress;
-            qDebug() << "process: " << progress;
+           
+            item.st = status::downloading;
+            item.rate = progress;
+            if (this->callback != 0)
+                callback->stateInform(item);
             });
         process.start(this->EXE,cmd);
         process.waitForFinished();
@@ -480,6 +495,19 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     }
 
     return outdir;
+}
+
+void AudibleConvert::setCallback(STATECALLBACK* callback)
+{
+    this->callback = callback;
+}
+
+void AudibleConvert::stop()
+{
+    this->mtx.lock();
+    this->isConverting = false;
+    this->mtx.unlock();
+    emit this->killProcess();
 }
 
 QString AudibleConvert::check_type(QString filepath) {

@@ -1,6 +1,13 @@
 #include <QCoreApplication>
 #include "AudibleConvert.h"
 #include <qDebug>
+
+class ConvertSTATECALLBACK:public STATECALLBACK {
+public:
+   virtual void stateInform(ItemTable item) {
+        qDebug() << item.rate;
+    }
+};
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -17,8 +24,13 @@ int main(int argc, char *argv[])
     */
     //converter.set_mp3_meta(R"(‪D:\Users\Documents\10.So Far Away (SUGA, 진, 정국 Ver.).mp3)", meta);
     //AudibleConvert::set_m4b_cover(m4bPath, coverPath);
-    converter.process(meta, filePath,convparam::CHAPTERS);
-
-    
+    STATECALLBACK* cb = new ConvertSTATECALLBACK;
+    converter.setCallback(cb);
+    std::thread obj([&]() {
+        qDebug() << converter.process(meta, filePath, convparam::CHAPTERS);
+        });
+    getchar();
+    converter.stop();
+    qDebug() << "stop" << endl;
     return a.exec();
 }
