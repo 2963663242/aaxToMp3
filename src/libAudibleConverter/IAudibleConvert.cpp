@@ -13,7 +13,7 @@ QString IAudibleConvert::check_type(QString filepath)
 	return AudibleConvert::check_type(filepath);
 }
 
-IAudibleConvert* IAudibleConvert::Create()
+shared_ptr<IAudibleConvert> IAudibleConvert::Create()
 {
-	return new AudibleConvert("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
+	return make_shared<AudibleConvert>("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
 }

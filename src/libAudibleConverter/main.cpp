@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     QString m4bPath = "C:\\Users\\Administrator\\EpuborAudible\\1. Fabi Fuchs und der verlorene Nuss-Schatz_ Fabi Fuchs.m4b";
     qDebug() << IAudibleConvert::check_type(filePath);
     //AudibleConvert converter("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
-    IAudibleConvert* converter = IAudibleConvert::Create();
+    auto converter = IAudibleConvert::Create();
     AudibleMeta meta = converter->getMeta(filePath);
     /* qDebug() << "key data: " << converter.seek_code(meta.checksum);
     qDebug() << "valitdate title: " << AudibleConvert::validate_title("\"[]<>");
@@ -33,6 +33,6 @@ int main(int argc, char *argv[])
         });
     getchar();
     converter->stop();
-    qDebug() << "stop" << endl;
+    qDebug() << "stop";
     return a.exec();
 }

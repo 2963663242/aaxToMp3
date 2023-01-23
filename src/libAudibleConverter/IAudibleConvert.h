@@ -1,5 +1,6 @@
 #include <QString>
-
+#include <memory>
+using namespace std;
 enum status {
 	downloading
 };
@@ -50,7 +51,7 @@ public :
 	virtual void stop() = 0;
 public :
 	static QString check_type(QString filepath);
-	static IAudibleConvert* Create();
+	static shared_ptr<IAudibleConvert> Create();
 };
 
 
