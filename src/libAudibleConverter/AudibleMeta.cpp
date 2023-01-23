@@ -1,5 +1,5 @@
-#include "AudibleMeta.h"
 #include <QFileInfo>
+#include "IAudibleConvert.h"
 AudibleMeta::AudibleMeta(QString title, QString album, QString artist, QString copyright, QString year, QString genre, QString comments, QString cover)
 {
 	this->title = title;

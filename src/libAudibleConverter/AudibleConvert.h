@@ -1,30 +1,11 @@
 #include <QString>
 #include <QJsonObject>
-#include <AudibleMeta.h>
 #include <mutex>
-
+#include <IAudibleConvert.h>
 using namespace std;
 
-enum status {
-	downloading
-};
-struct ItemTable {
-	status st;
-	double rate;
-};
 
-class STATECALLBACK {
-public:
-	virtual void stateInform(ItemTable item) = 0;
-};
-
-
-
-enum convparam {
-	SINGLE,
-	CHAPTERS,
-};
-class AudibleConvert : public QObject {
+class AudibleConvert : public QObject ,public IAudibleConvert {
 	Q_OBJECT
 public:
 	AudibleConvert(QString usrPath);

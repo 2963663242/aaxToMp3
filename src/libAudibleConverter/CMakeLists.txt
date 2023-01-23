@@ -4,8 +4,10 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
 add_executable(libAudibleConverter
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/AudibleMeta.h
+  # ${CMAKE_CURRENT_SOURCE_DIR}/AudibleMeta.h
   ${CMAKE_CURRENT_SOURCE_DIR}/AudibleMeta.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/IAudibleConvert.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/IAudibleConvert.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/AudibleConvert.h
   ${CMAKE_CURRENT_SOURCE_DIR}/AudibleConvert.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/functions.h
