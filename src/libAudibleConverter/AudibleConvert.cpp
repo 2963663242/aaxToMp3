@@ -153,18 +153,21 @@ QString AudibleConvert::compute(QString checksum)
     
     if (QDir::separator() == '\\') {
         QProcess process;
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
         process.start("bin\\win_rcrack.exe", { "bin\\tables" , "-h", checksum });
         process.waitForStarted();
         process.waitForFinished(-1);
         QString output = process.readAllStandardOutput().data();
         output = output.simplified();
         QString code = output.mid(output.length() - 8);
+        qDebug() << "compute finished";
         if (this->verify_code(code))
             return code;
         return "";
     }
     else {
         QProcess process;
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
         process.start("bin/mac_rcrack", { 
             "bin/tables/audible_byte#4-4_0_10000x1362345_0.rt",
             "bin/tables/audible_byte#4-4_1_10000x1362345_0.rt",
@@ -180,6 +183,7 @@ QString AudibleConvert::compute(QString checksum)
             return code;
         return "";
     }
+    
 }
 QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
 {
@@ -188,6 +192,7 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
         int one_k = 100;
         QRegExp rx("bitrate: (\\d{2,3})");
         QProcess process;
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
         process.start(this->EXE, { "-i", filepath });
         process.waitForFinished(-1);
         QString output = process.readAllStandardError().data();
@@ -236,6 +241,7 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
     else {
         QRegExp rx("(\\d+\\.\\d{6})");
         QProcess process;
+        connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
         process.start(this->EXE, { "-i", filepath });
         process.waitForFinished(-1);
         QString output = process.readAllStandardError().data();
@@ -264,6 +270,7 @@ bool AudibleConvert::set_mp3_meta(QString filepath, AudibleMeta meta)
     QString name = QFileInfo(filepath).fileName();
     QString tmpfile = QDir::tempPath() + QDir::separator() + name;
     QProcess process;
+    connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
    process.start(this->EXE, { "-i", filepath, "-c", "copy", "-id3v2_version", "3",
         "-metadata", "title=" + meta.title,
         "-metadata", "album=" + meta.album,
@@ -290,6 +297,7 @@ bool AudibleConvert::set_m4b_meta(QString filepath, AudibleMeta meta)
     QString name = QFileInfo(filepath).fileName();
     QString tmpfile = QDir::tempPath() + QDir::separator() + name;
     QProcess process;
+    connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
     process.start(this->EXE, { "-i", filepath, "-c:a", "copy",
          "-metadata", "title=" + meta.title,
          "-metadata", "album=" + meta.album,
@@ -316,6 +324,7 @@ bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
     QString name = QFileInfo(filepath).fileName();
     QString tmpfile = QDir::tempPath() + QDir::separator() + name;
     QProcess process;
+    connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
     process.start(this->EXE, { "-i", filepath, "-i", cover, "-map", "0:0", "-map", "1:0", "-c", "copy", "-id3v2_version", "3",
          tmpfile });
 
@@ -333,10 +342,9 @@ bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
 
 QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam convp, QString ext)
 {
-    this->mtx.lock();
-    this->isConverting = true;
-    this->mtx.unlock();
+   
     ItemTable item;
+    ItemSender sender(&item,this->callback);
     double progress = 0.0;
     float hours = 0, mins = 0, secs = 0;
     QString strDuration = meta.duration;
@@ -375,8 +383,9 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
                 args += { "-y", "-activation_bytes", act_code, "-i", filepath, "-vn", outpath };
         }
 
+        if (isStop())
+            return "";
         QProcess process;
-        
         connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill,Qt::DirectConnection);
         QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
             QString content = process.readAllStandardError().data();
@@ -404,6 +413,10 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
             this->set_m4b_meta(outpath, meta);
             this->set_m4b_cover(outpath, meta.cover());
         }
+        if (this->isStop())
+            return "";
+
+        item.filepath = outpath;
         return outpath;
     }
     QString name = this->validate_title(meta.title);
@@ -463,6 +476,9 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         }
         
     }
+
+    if (isStop())
+        return "";
     int idx = 0;
     for each (QList<QString> cmd in cmds) {
         QProcess process;
@@ -488,12 +504,15 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     }
     QStringList files = QDir(outdir).entryList(QDir::Files);
     for each (QString f in files) {
+       
         if (ext == ".mp3")
             this->set_mp3_cover(outdir + QDir::separator() + f, meta.cover());
         else
             this->set_m4b_cover(outdir + QDir::separator() + f, meta.cover());
+        if (this->isStop())
+            return "";
     }
-
+    item.filepath = outdir;
     return outdir;
 }
 
@@ -508,6 +527,22 @@ void AudibleConvert::stop()
     this->isConverting = false;
     this->mtx.unlock();
     emit this->killProcess();
+}
+
+void AudibleConvert::setStartState()
+{
+    this->mtx.lock();
+    this->isConverting = true;
+    this->mtx.unlock();
+}
+
+bool AudibleConvert::isStop()
+{
+    bool stop =  false;
+    this->mtx.lock();
+    stop =  !this->isConverting;
+    this->mtx.unlock();
+    return stop;
 }
 
 QString AudibleConvert::check_type(QString filepath) {
@@ -582,7 +617,6 @@ bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
         int new_moov_size = old_moov_size + cov_len + 24;
         QByteArray new_moov_bytes = QByteArray::fromHex(QString::asprintf("%08x", new_moov_size).toUtf8());
         out = out.mid(0, idx_moov - 4) + new_moov_bytes + out.mid(idx_moov);
-        
         int idx_meta = out.indexOf("meta", idx_moov);
         QByteArray old_meta_bytes = out.mid(idx_meta - 4, 4);
         int old_meta_size = old_meta_bytes.toHex().toInt(&ok, 16);
@@ -614,13 +648,23 @@ bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
 
             QFile data(tmpfile);
             if (data.open(QFile::WriteOnly | QIODevice::Truncate)) {
-                data.write(out);
+                int pos = 0;
+                int length = 4096;
+                while (pos < out.size()) {
+                    data.write(out.mid(pos,4096));
+                    if (this->isStop())
+                        break;
+                    pos += length;
+                }
+                
                 data.close();
                 aaxFile.close();
                 covFile.close();
                 QFile::remove(filepath);
-                QFile::rename(tmpfile, filepath);
-                QFile::remove(tmpfile);
+                if (!this->isStop()) {
+                    QFile::rename(tmpfile, filepath);
+                    QFile::remove(tmpfile);
+                }
                 return true;
             }
            

@@ -7,13 +7,17 @@
 class ConvertSTATECALLBACK:public STATECALLBACK {
 public:
    virtual void stateInform(ItemTable item) {
-        qDebug() << item.rate;
+       if(item.st == status::downloading)
+            qDebug() << item.rate;
+       else if (item.st == status::finished) {
+           qDebug() << "convert finished . filepath: " << item.filepath;
+       }
     }
 };
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QString filePath = QString::fromLocal8Bit(R"(D:\Users\Documents\WXWork\1688850575211706\Cache\File\2023-01\aa.aa)");
+    QString filePath = QString::fromLocal8Bit(R"(D:\Users\Downloads\TheGreatestMenaceInsidetheGayPrisonExperiment_ep7.aax)");
     QString coverPath = R"(C:\Users\Administrator\AppData\Roaming\EpuborAudible\cover\417cc7e3e401d28e4431b9c2ac758c09.jpg)";
     QString m4bPath = "C:\\Users\\Administrator\\EpuborAudible\\1. Fabi Fuchs und der verlorene Nuss-Schatz_ Fabi Fuchs.m4b";
     qDebug() << IAudibleConvert::check_type(filePath);
@@ -29,9 +33,8 @@ int main(int argc, char *argv[])
     //AudibleConvert::set_m4b_cover(m4bPath, coverPath);
     STATECALLBACK* cb = new ConvertSTATECALLBACK;
     converter->setCallback(cb);
-    std::thread obj([&]() {
-        qDebug() << converter->process(meta, filePath, convparam::SINGLE);
-        });
+    converter->convert(meta, filePath, convparam::SINGLE,".m4b");
+    
     getchar();
     converter->stop();
     qDebug() << "stop";

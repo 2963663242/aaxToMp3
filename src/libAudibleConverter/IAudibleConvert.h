@@ -11,11 +11,13 @@
 #include <memory>
 using namespace std;
 enum status {
-	downloading
+	downloading,
+	finished
 };
 struct ItemTable {
 	status st;
 	double rate;
+	QString filepath;
 };
 
 class STATECALLBACK {
@@ -56,11 +58,14 @@ public :
 	IAudibleConvert();
 	virtual AudibleMeta getMeta(QString filepath) = 0;
 	virtual void setCallback(STATECALLBACK* callback) = 0;
-	virtual QString process(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3") = 0;
+	QString convert(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3");
 	virtual void stop() = 0;
+private:
+	virtual QString process(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3") = 0;
+	virtual void setStartState() = 0;
 public:
 	static QString check_type(QString filepath);
-	static shared_ptr<IAudibleConvert> Create();
+	static IAudibleConvert* Create();
 };
 
 

@@ -8,12 +8,23 @@ IAudibleConvert::IAudibleConvert()
 {
 }
 
+QString IAudibleConvert::convert(AudibleMeta meta, QString filepath, convparam convp, QString ext)
+{
+	this->setStartState();
+	std::thread obj([=]() {
+		return this->process(meta, filepath, convp, ext);
+		
+	});
+	obj.detach();
+	return "";
+}
+
 QString IAudibleConvert::check_type(QString filepath)
 {
 	return AudibleConvert::check_type(filepath);
 }
 
-shared_ptr<IAudibleConvert> IAudibleConvert::Create()
+IAudibleConvert* IAudibleConvert::Create()
 {
-	return make_shared<AudibleConvert>("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
+	return new AudibleConvert("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
 }
