@@ -97,7 +97,7 @@ QByteArray get_cover_from_aa(QString aafile)
 						cover_data = (pre + chunk).mid(finded);
 					pre = chunk.mid(chunk.length() - flag.length());
 				}
-
+				index += length;
 			}
 
 		}

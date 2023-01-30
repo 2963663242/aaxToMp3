@@ -70,26 +70,26 @@ AudibleMeta AudibleConvert::getMeta(QString filepath)
     QString pubdate = get_meta_one(output, "pubdate         : ");
     if (!pubdate.isEmpty())
         meta.year = pubdate;
-    else {
-        meta.genre = "Audiobook";
-        QString comment = get_meta_one(output, "comment         : ");
-        if (!comment.isEmpty())
-            meta.comments = comment;
+    
+    meta.genre = "Audiobook";
+    QString comment = get_meta_one(output, "comment         : ");
+    if (!comment.isEmpty())
+        meta.comments = comment;
 
-        coverpath = QDir(setting.coverpath).absoluteFilePath(getmd5(filepath) + ".jpg");
-        qDebug() << coverpath;
+    coverpath = QDir(setting.coverpath).absoluteFilePath(getmd5(filepath) + ".jpg");
+    qDebug() << coverpath;
         
-        QString typ = this->check_type(filepath);
+    QString typ = this->check_type(filepath);
         
-        if (typ == "aax")
-        {
-            cover_data = get_cover_from_aax(filepath);
-        }
-        else if (typ == "aa") {
-            cover_data = get_cover_from_aa(filepath);
-        }
-        
+    if (typ == "aax")
+    {
+        cover_data = get_cover_from_aax(filepath);
     }
+    else if (typ == "aa") {
+        cover_data = get_cover_from_aa(filepath);
+    }
+        
+    
 
     if (!cover_data.isEmpty()) {
         QFile f(coverpath);
@@ -153,7 +153,7 @@ QString AudibleConvert::compute(QString checksum)
     
     if (QDir::separator() == '\\') {
         QProcess process;
-        process.start("bin\\win_rcrack.exe", { "bin\\tables", "-h", checksum });
+        process.start("bin\\win_rcrack.exe", { "bin\\tables" , "-h", checksum });
         process.waitForStarted();
         process.waitForFinished(-1);
         QString output = process.readAllStandardOutput().data();

@@ -2,6 +2,7 @@
 #include "IAudibleConvert.h"
 #include <qDebug>
 #include <thread>
+#include <QtCore/qdir.h>
 
 class ConvertSTATECALLBACK:public STATECALLBACK {
 public:
@@ -12,7 +13,7 @@ public:
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QString filePath = QString::fromLocal8Bit(R"(D:\\Users\\Documents\\1.FabiFuchsundderverloreneNuss-SchatzFabiFuchs_ep7.aax)");
+    QString filePath = QString::fromLocal8Bit(R"(D:\Users\Documents\WXWork\1688850575211706\Cache\File\2023-01\aa.aa)");
     QString coverPath = R"(C:\Users\Administrator\AppData\Roaming\EpuborAudible\cover\417cc7e3e401d28e4431b9c2ac758c09.jpg)";
     QString m4bPath = "C:\\Users\\Administrator\\EpuborAudible\\1. Fabi Fuchs und der verlorene Nuss-Schatz_ Fabi Fuchs.m4b";
     qDebug() << IAudibleConvert::check_type(filePath);
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
     STATECALLBACK* cb = new ConvertSTATECALLBACK;
     converter->setCallback(cb);
     std::thread obj([&]() {
-        qDebug() << converter->process(meta, filePath, convparam::CHAPTERS);
+        qDebug() << converter->process(meta, filePath, convparam::SINGLE);
         });
     getchar();
     converter->stop();
