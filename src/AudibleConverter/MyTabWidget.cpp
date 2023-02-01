@@ -17,6 +17,7 @@ MyTabWidget::MyTabWidget(QWidget* parent):QWidget(parent){
 	);
 
 	stack = new QStackedWidget(this);
+	stack->setContentsMargins(0, 0, 0, 0);
 	group = new QActionGroup(this);
 	group->setExclusive(true);
 	

@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
    
 
    ui->verticalLayout->addWidget(tab);
-    
+   ui->verticalLayout->setSpacing(0);
+   ui->verticalLayout->setMargin(0);
 }
 
 MainWindow::~MainWindow()

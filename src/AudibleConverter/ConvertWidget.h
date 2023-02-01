@@ -12,4 +12,6 @@ public:
 private:
     QPushButton* addFile;
     QGroupBox * TaskContainer;
+    QPushButton* allStart;
+    QPushButton* allStop;
 };
