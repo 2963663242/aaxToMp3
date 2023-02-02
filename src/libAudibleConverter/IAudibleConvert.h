@@ -1,4 +1,6 @@
 
+#ifndef IAUDIBLECONVERT
+#define IAUDIBLECONVERT
 #ifndef  DLL_EXPORT
 #ifdef _WIN32
 #define  DLL_EXPORT __declspec(dllexport)
@@ -69,3 +71,4 @@ public:
 };
 
 
+#endif

@@ -51,13 +51,13 @@ AudibleMeta AudibleConvert::getMeta(QString filepath)
     if (!album.isEmpty()) {
         meta.album = album;
     }
-    else {
-        QString author = get_meta_one(output, "author          : ");
-        if (!author.isEmpty())
-            meta.artist = author;
-        else 
-            meta.artist = get_meta_one(output, "artist          : ");
-    }
+  
+    QString author = get_meta_one(output, "author          : ");
+    if (!author.isEmpty())
+        meta.artist = author;
+    else 
+        meta.artist = get_meta_one(output, "artist          : ");
+    
 
     QString cpright = get_meta_one(output, "copyright       : ");
     if (!cpright.isEmpty())
