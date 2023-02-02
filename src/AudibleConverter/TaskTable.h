@@ -1,6 +1,7 @@
 #include <QTableWidget>
 #include <QPushButton>
 #include "IAudibleConvert.h"
+#include <qDebug>
 
 class QLabel;
 class QStackedWidget;
@@ -25,13 +26,13 @@ public:
 
 class ConvertTask {
 public:
-	ConvertTask(QString filename, TaskTableWidget * convertWidget);
+	ConvertTask(QString filename);
 public:
 	AudibleMeta meta;
 	QString filename;
 	IAudibleConvert* converter;
 	STATECALLBACK* cb; 
-	TaskTableWidget* convertWidget;
+	
 };
 
 

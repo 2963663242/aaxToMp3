@@ -112,6 +112,7 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 		});
 
 }
+
 void TaskTableWidget::addTask(ConvertTask* task)
 {
 	auto rowHt = TaskCellWidget::cellHeight();
@@ -133,7 +134,7 @@ int TaskCellWidget::cellHeight()
 	return lineSpacing * 2 + layoutTopMargin + layoutSpacing + layoutBtmMargin + 2+ TaskCellHeight;
 }
 
-ConvertTask::ConvertTask(QString filename) :filename(filename) {
+ConvertTask::ConvertTask(QString filenamet) :filename(filename){
 	cb = new ConvertSTATECALLBACK;
 	this->converter = IAudibleConvert::Create();
 	converter->setCallback(cb);
