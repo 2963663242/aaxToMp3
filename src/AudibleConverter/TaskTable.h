@@ -1,7 +1,7 @@
 #include <QTableWidget>
 #include <QPushButton>
-#include "IAudibleConvert.h"
 #include <qDebug>
+#include "ConvertTask.h"
 
 class QLabel;
 class QStackedWidget;
@@ -13,27 +13,7 @@ class QProgressBar;
 
 const int TaskCellHeight = 100;
 
-class ConvertSTATECALLBACK :public STATECALLBACK {
-public:
-	virtual void stateInform(ItemTable item) {
-		if (item.st == status::downloading)
-			qDebug() << item.rate;
-		else if (item.st == status::finished) {
-			qDebug() << "convert finished . filepath: " << item.filepath;
-		}
-	}
-};
 
-class ConvertTask {
-public:
-	ConvertTask(QString filename);
-public:
-	AudibleMeta meta;
-	QString filename;
-	IAudibleConvert* converter;
-	STATECALLBACK* cb; 
-	
-};
 
 
 class TaskTableWidget:public QTableWidget {
@@ -53,6 +33,8 @@ public:
 	TaskCellWidget(ConvertTask* task,QWidget* parent = nullptr);
 public:
 	static int cellHeight();
+public slots:
+	void setProgress(double rate);
 private:
 	QLabel* thumbnail;
 	QStackedWidget* buttonCheck;

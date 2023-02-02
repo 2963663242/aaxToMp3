@@ -12,6 +12,8 @@ set(PROJECT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/ConvertWidget.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/TaskTable.h
         ${CMAKE_CURRENT_SOURCE_DIR}/TaskTable.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertTask.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertTask.cpp
 )
 
 add_executable(AudibleConverter 
