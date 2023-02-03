@@ -58,6 +58,7 @@ public:
 class DLL_EXPORT IAudibleConvert {
 public :
 	IAudibleConvert();
+	~IAudibleConvert();
 	virtual AudibleMeta getMeta(QString filepath) = 0;
 	virtual void setCallback(STATECALLBACK* callback) = 0;
 	QString convert(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3");
@@ -68,6 +69,7 @@ private:
 public:
 	static QString check_type(QString filepath);
 	static IAudibleConvert* Create();
+	static void Release(IAudibleConvert*);
 };
 
 

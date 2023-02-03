@@ -23,6 +23,7 @@ class AudibleConvert : public QObject ,public IAudibleConvert {
 	Q_OBJECT
 public:
 	AudibleConvert(QString usrPath);
+	virtual ~AudibleConvert();
 	AudibleMeta getMeta(QString filepath);
 	QString seek_code(QString checksum);
 	QString compute(QString checksum);

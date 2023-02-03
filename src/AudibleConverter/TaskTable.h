@@ -21,8 +21,11 @@ class TaskTableWidget:public QTableWidget {
 public:
 	TaskTableWidget(QWidget* parent = nullptr);
 	void addTask(ConvertTask* task);
-
-
+public slots:
+	void onCellTaskFinished();
+private:
+	int rowOfCell(TaskCellWidget* cell) const;
+	TaskCellWidget* cellWidget(int row) const;
 };
 
 
@@ -31,8 +34,13 @@ class TaskCellWidget :public QWidget {
 	Q_OBJECT
 public:
 	TaskCellWidget(ConvertTask* task,QWidget* parent = nullptr);
+	~TaskCellWidget();
 public:
 	static int cellHeight();
+signals:
+	void startClicked(QString format, convparam splitway);
+	void stopClicked();
+	void taskFinished();
 public slots:
 	void setProgress(double rate);
 private:

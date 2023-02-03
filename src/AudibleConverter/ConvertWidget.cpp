@@ -35,11 +35,11 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 	mainLayout->addWidget(TaskContainer);
 	mainLayout->addLayout(footLayout);
 	mainLayout->setContentsMargins(0, 0, 0, 0);
-	QTimer::singleShot(0, [this]() {
-		QString filePath = R"(C:\Users\czl\Desktop\1.FabiFuchsundderverloreneNuss-SchatzFabiFuchs_ep7.aax)";
+	/*QTimer::singleShot(0, [this]() {
+		QString filePath = R"(D:\Users\Documents\WXWork\1688850575211706\Cache\File\2022-11\1.FabiFuchsundderverloreneNuss-SchatzFabiFuchs_ep7.aax)";
 		ConvertTask* task = new ConvertTask(filePath);
 		TaskContainer->addTask(task);
-		});
+		});*/
 	
 }
 

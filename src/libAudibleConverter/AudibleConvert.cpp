@@ -34,6 +34,9 @@ AudibleConvert::AudibleConvert(QString settingsPath)
         
     }
 }
+AudibleConvert::~AudibleConvert()
+{
+}
 AudibleMeta AudibleConvert::getMeta(QString filepath)
 {
     AudibleMeta meta;
@@ -190,7 +193,7 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
     QString typ = this->check_type(filepath);
     if (typ == "aa") {
         int one_k = 100;
-        QRegExp rx("bitrate: (\\d{2,3})");
+        QRegExp rx("bitrate: (\\d{1,3})");
         QProcess process;
         connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
         process.start(this->EXE, { "-i", filepath });
@@ -210,7 +213,7 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
             QList<int> idxs;
             int index = 0;
             int pos = 0;
-            while ((pos = contents.indexOf(MAGIC, index))!=-1) {
+            while ((pos = contents.indexOf(MAGIC, pos))!=-1) {
                 pos += MAGIC.length();
                 idxs.append(pos);
             }

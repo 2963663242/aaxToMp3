@@ -111,7 +111,19 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 		buttonCheck->setCurrentIndex(0);
 		});
 	task->connectWidget(this);
-
+	connect(btnStart, &QPushButton::clicked, [this]() {
+		QString format = comboFormat->currentText();
+		int splitWay = comboSplit->currentIndex();
+		format = "." + format;
+		convparam conv = convparam::SINGLE;
+		if (splitWay == 1) {
+			conv = convparam::CHAPTERS;
+		}
+		emit this->startClicked(format, conv);
+		});
+	connect(btnStop, &QPushButton::clicked, [this]() {
+		emit this->stopClicked();
+		});
 }
 
 
@@ -122,10 +134,40 @@ void TaskTableWidget::addTask(ConvertTask* task)
 	int idx = rowCount();
 	insertRow(idx);
 	setRowHeight(idx,rowHt);
-	setCellWidget(idx, 0, new TaskCellWidget(task));
+	TaskCellWidget* cell = new TaskCellWidget(task);
+	setCellWidget(idx, 0, cell);
+	connect(cell, &TaskCellWidget::taskFinished, this, &TaskTableWidget::onCellTaskFinished);
+}
+
+int TaskTableWidget::rowOfCell(TaskCellWidget* cell) const
+{
+	int rowCnt = rowCount();
+	for (int row = 0; row < rowCnt; row++) {
+		if (cellWidget(row) == cell) {
+			return row;
+		}
+	}
+	return -1;
+}
+TaskCellWidget* TaskTableWidget::cellWidget(int row) const
+{
+	return static_cast<TaskCellWidget*>(QTableWidget::cellWidget(row, 0));
+}
+
+void TaskTableWidget::onCellTaskFinished()
+{
+	auto cell = static_cast<TaskCellWidget*>(sender());
+	QTimer::singleShot(0, this, [=] {
+		removeRow(this->rowOfCell(cell));
+		});
 }
 
 
+
+TaskCellWidget::~TaskCellWidget()
+{
+	delete task;
+}
 
 int TaskCellWidget::cellHeight()
 {
@@ -137,8 +179,9 @@ int TaskCellWidget::cellHeight()
 	return lineSpacing * 2 + layoutTopMargin + layoutSpacing + layoutBtmMargin + 2+ TaskCellHeight;
 }
 
+
 void TaskCellWidget::setProgress(double rate) {
-	qDebug() << rate;
+	this->progress->setValue(rate);
 
 }
 

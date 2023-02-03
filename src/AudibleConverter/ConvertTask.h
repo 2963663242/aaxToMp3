@@ -14,13 +14,20 @@ public:
 	virtual void stateInform(ItemTable item); 
 signals:
 	void updateProgress(double rate);
+	void convertFinished();
 };
 
-class ConvertTask {
+class ConvertTask :public QObject {
+	Q_OBJECT
 public:
 	ConvertTask(QString filename);
 	~ConvertTask();
 	void connectWidget(TaskCellWidget* parent);
+	
+public slots:
+	void start(QString format, convparam splitway);
+	void stop();
+	
 public:
 	AudibleMeta meta;
 	QString filename;

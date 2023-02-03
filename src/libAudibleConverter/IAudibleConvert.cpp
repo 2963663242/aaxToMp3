@@ -8,6 +8,10 @@ IAudibleConvert::IAudibleConvert()
 {
 }
 
+IAudibleConvert::~IAudibleConvert()
+{
+}
+
 QString IAudibleConvert::convert(AudibleMeta meta, QString filepath, convparam convp, QString ext)
 {
 	this->setStartState();
@@ -27,4 +31,9 @@ QString IAudibleConvert::check_type(QString filepath)
 IAudibleConvert* IAudibleConvert::Create()
 {
 	return new AudibleConvert("C:\\Users\\Administrator\\AppData\\Roaming\\.EpuborAudible");
+}
+
+void IAudibleConvert::Release(IAudibleConvert* converter)
+{
+	delete converter;
 }
