@@ -21,6 +21,9 @@ class TaskTableWidget:public QTableWidget {
 public:
 	TaskTableWidget(QWidget* parent = nullptr);
 	void addTask(ConvertTask* task);
+signals:
+	void startAll();
+	void stopAll();
 public slots:
 	void onCellTaskFinished();
 private:
@@ -41,6 +44,8 @@ signals:
 	void startClicked(QString format, convparam splitway);
 	void stopClicked();
 	void taskFinished();
+	void startAll();
+	void stopAll();
 public slots:
 	void setProgress(double rate);
 private:

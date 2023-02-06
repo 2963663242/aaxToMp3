@@ -124,6 +124,15 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 	connect(btnStop, &QPushButton::clicked, [this]() {
 		emit this->stopClicked();
 		});
+	connect(this, &TaskCellWidget::startAll, [this]() {
+		if(this->buttonCheck->currentIndex() == 0)
+			emit this->btnStart->clicked();
+		});
+	connect(this, &TaskCellWidget::stopAll, [this]() {
+		if (this->buttonCheck->currentIndex() == 1)
+			emit this->btnStop->clicked();
+		});
+	
 }
 
 
@@ -137,6 +146,8 @@ void TaskTableWidget::addTask(ConvertTask* task)
 	TaskCellWidget* cell = new TaskCellWidget(task);
 	setCellWidget(idx, 0, cell);
 	connect(cell, &TaskCellWidget::taskFinished, this, &TaskTableWidget::onCellTaskFinished);
+	connect(this, &TaskTableWidget::startAll, cell, &TaskCellWidget::startAll);
+	connect(this, &TaskTableWidget::stopAll, cell, &TaskCellWidget::stopAll);
 }
 
 int TaskTableWidget::rowOfCell(TaskCellWidget* cell) const

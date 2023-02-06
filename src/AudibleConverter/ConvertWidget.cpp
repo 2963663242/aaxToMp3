@@ -40,6 +40,8 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 		ConvertTask* task = new ConvertTask(filePath);
 		TaskContainer->addTask(task);
 		});*/
+	connect(allStart, &QPushButton::clicked, TaskContainer, &TaskTableWidget::startAll);
+	connect(allStop, &QPushButton::clicked, TaskContainer, &TaskTableWidget::stopAll);
 	
 }
 
