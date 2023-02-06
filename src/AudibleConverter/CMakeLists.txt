@@ -1,20 +1,9 @@
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 
-set(PROJECT_SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.ui
-        ${CMAKE_CURRENT_SOURCE_DIR}/MyTabWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/MyTabWidget.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertWidget.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertWidget.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/TaskTable.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/TaskTable.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertTask.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConvertTask.cpp
-)
+
+file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/*.ui")
+set(PROJECT_SOURCES ${SOURCE_FILES})
 
 add_executable(AudibleConverter 
 	${PROJECT_SOURCES}

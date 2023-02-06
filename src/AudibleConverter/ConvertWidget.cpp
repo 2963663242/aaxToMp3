@@ -6,6 +6,7 @@
 #include "TaskTable.h"
 #include <QtWidgets>
 #include "IAudibleConvert.h"
+#include "Settings.h"
 ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 	
 	addFile = new QPushButton(QString::fromLocal8Bit("添加文件"));
@@ -22,9 +23,16 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 	footLayout->setSpacing(0);
 	
 	footLayout->setContentsMargins(0, 0, 0, 0);
+
+	openSave = new QPushButton(QString::fromLocal8Bit("打开文件夹"));
+	selectSave = new QPushButton(QString::fromLocal8Bit("设置文件夹"));
+	labSavePath = new QLabel(Settings::getInstance()->getSavePath());
 	allStart = new QPushButton(QString::fromLocal8Bit("全部开始"));
 	allStop = new QPushButton(QString::fromLocal8Bit("全部停止"));
-
+	
+	footLayout->addWidget(openSave);
+	footLayout->addWidget(selectSave);
+	footLayout->addWidget(labSavePath);
 	footLayout->addItem(new QSpacerItem(20, 0, QSizePolicy::Expanding));
 	footLayout->addWidget(allStart);
 	footLayout->addWidget(allStop);
@@ -42,7 +50,14 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 		});*/
 	connect(allStart, &QPushButton::clicked, TaskContainer, &TaskTableWidget::startAll);
 	connect(allStop, &QPushButton::clicked, TaskContainer, &TaskTableWidget::stopAll);
-	
+	connect(openSave, &QPushButton::clicked, [this]() {
+		QDesktopServices::openUrl(QUrl("file:///"+this->labSavePath->text()));
+		});
+	connect(selectSave, &QPushButton::clicked, [this]() {
+		QString imageFolder = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("选择文件保存路径"), "./", QFileDialog::ShowDirsOnly);
+		this->labSavePath->setText(imageFolder);
+		Settings::getInstance()->setSavePath(imageFolder);
+		});
 }
 
 void ConvertWidget::importFile() {
@@ -55,7 +70,7 @@ void ConvertWidget::importFile() {
 	QString type = IAudibleConvert::check_type(fileName);
 	if (type == "aax" || type == "aa") {
 		QTimer::singleShot(0, [this,filePath=fileName]() {
-			ConvertTask * task = new ConvertTask(filePath);
+			ConvertTask * task = new ConvertTask(filePath, Settings::getInstance()->getSavePath());
 			TaskContainer->addTask(task);
 			});
 	}

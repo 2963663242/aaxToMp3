@@ -19,6 +19,7 @@ AudibleConvert::AudibleConvert(QString settingsPath)
     this->EXE = QDir::separator() == '\\' ? "plugins/win" : "plugins/mac";
     this->EXE = os_sep(getExeDirectory() + QDir::separator() + this->EXE);
     this->CFGFILE = this->settingsPath + QDir::separator() + "audible.cfg";
+    this->savePath = setting.outputPath;
     QFileInfo fileInfo(CFGFILE);
     if (!fileInfo.isFile()) {
         QJsonDocument jsonDoc;
@@ -370,7 +371,7 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     QString mime = this->check_type(filepath);
     if (split_points.length() == 1) {
         QString  outname = this->validate_title(meta.title) + ext;
-        QString outpath = setting.outputPath + QDir::separator() + outname;
+        QString outpath = this->savePath + QDir::separator() + outname;
         if (outpath.length() > 240)
             outpath = outpath.mid(0, 240) + ext;
         outpath = choosename(outpath);
@@ -423,7 +424,7 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         return outpath;
     }
     QString name = this->validate_title(meta.title);
-    QString outdir = setting.outputPath + QDir::separator() + name.mid(0, 20);
+    QString outdir = this->savePath + QDir::separator() + name.mid(0, 20);
     outdir = mkdir(outdir);
     QList<QList<QString>> cmds;
     if (mime == "aa") {
@@ -675,6 +676,12 @@ bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
     }
 
     return false;
+}
+
+void AudibleConvert::setSavePath(QString savePath)
+{
+    this->savePath = savePath;
+    return ;
 }
 
 

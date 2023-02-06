@@ -3,6 +3,7 @@
 class QPushButton;
 class QGroupBox;
 class TaskTableWidget;
+class QLabel;
 class ConvertWidget : public QWidget
 {
     Q_OBJECT
@@ -17,4 +18,7 @@ private:
     TaskTableWidget* TaskContainer;
     QPushButton* allStart;
     QPushButton* allStop;
+    QPushButton* openSave;
+    QPushButton* selectSave;
+    QLabel* labSavePath;
 };

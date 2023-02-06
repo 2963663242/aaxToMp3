@@ -5,7 +5,7 @@
 #include <qDebug>
 #include <QDir>
 
-#define CLASSNAME "EpuborAudible"
+#define CLASSNAME "AAXConverter"
 
 settings setting;
 
@@ -16,7 +16,7 @@ settings::settings()
 #ifdef Q_OS_MAC
 	QString confpath = QDir::homePath();
 	QString homepath = confpath;
-	this->coverpath = confpath + "/.EpuborAudible/cover/";
+	this->coverpath = confpath + "/."+ CLASSNAME + "/cover/";
 #endif
 
 #ifdef Q_OS_WIN32
@@ -26,4 +26,9 @@ settings::settings()
 	this->coverpath = confpath + "\\"+ CLASSNAME +"\\cover\\";
 #endif
 	outputPath = homepath + QDir::separator() + CLASSNAME;
+	if (!QDir(coverpath).exists())
+		QDir().mkpath(coverpath);
+	if (!QDir(outputPath).exists())
+		QDir().mkpath(outputPath);
 }
+

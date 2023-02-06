@@ -1,6 +1,6 @@
 #include "TaskTable.h"
 #include <QtWidgets>
-
+#include "Settings.h"
 
 TaskTableWidget::TaskTableWidget(QWidget* parent):QTableWidget(parent) {
 	horizontalHeader()->hide();
@@ -165,10 +165,17 @@ TaskCellWidget* TaskTableWidget::cellWidget(int row) const
 	return static_cast<TaskCellWidget*>(QTableWidget::cellWidget(row, 0));
 }
 
-void TaskTableWidget::onCellTaskFinished()
+void TaskTableWidget::onCellTaskFinished(QString filepath)
 {
 	auto cell = static_cast<TaskCellWidget*>(sender());
+
+	QFileInfo fileInfo = QFileInfo(filepath);
+	if (fileInfo.isFile())
+		QDir().rename(filepath, Settings::getInstance()->getSavePath() + QDir::separator() + fileInfo.fileName());
+	else
+		toMove(filepath, Settings::getInstance()->getSavePath());
 	QTimer::singleShot(0, this, [=] {
+		
 		removeRow(this->rowOfCell(cell));
 		});
 }

@@ -32,6 +32,7 @@ public:
 	bool set_m4b_meta(QString filepath, AudibleMeta meta);
 	bool set_mp3_cover(QString filepath, QString cover);
 	bool set_m4b_cover(QString filepath, QString cover);
+	virtual void setSavePath(QString savePath);
 	QString process(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3");
 	void setCallback(STATECALLBACK* callback);
 	void stop();
@@ -53,6 +54,7 @@ private:
 	STATECALLBACK* callback = 0;
 	bool isConverting = false;
 	mutex mtx;
+	QString savePath;
 };
 
 

@@ -63,6 +63,7 @@ public :
 	virtual void setCallback(STATECALLBACK* callback) = 0;
 	QString convert(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3");
 	virtual void stop() = 0;
+	virtual void setSavePath(QString savePath)=0;
 private:
 	virtual QString process(AudibleMeta meta, QString filepath, convparam convp = convparam::SINGLE, QString ext = ".mp3") = 0;
 	virtual void setStartState() = 0;

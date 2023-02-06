@@ -25,7 +25,7 @@ signals:
 	void startAll();
 	void stopAll();
 public slots:
-	void onCellTaskFinished();
+	void onCellTaskFinished(QString);
 private:
 	int rowOfCell(TaskCellWidget* cell) const;
 	TaskCellWidget* cellWidget(int row) const;
@@ -43,7 +43,7 @@ public:
 signals:
 	void startClicked(QString format, convparam splitway);
 	void stopClicked();
-	void taskFinished();
+	void taskFinished(QString);
 	void startAll();
 	void stopAll();
 public slots:

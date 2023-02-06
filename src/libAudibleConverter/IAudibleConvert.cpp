@@ -1,5 +1,5 @@
 #include <AudibleConvert.h>
-
+#include "settings.h"
 
 
 
@@ -37,3 +37,5 @@ void IAudibleConvert::Release(IAudibleConvert* converter)
 {
 	delete converter;
 }
+
+
