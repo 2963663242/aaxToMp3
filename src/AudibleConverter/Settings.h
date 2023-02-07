@@ -17,4 +17,6 @@ private:
 
 };
 
-bool toMove(const QString& srcPath, const QString& desPath);
+bool toMove(QString srcPath, QString desPath);
+QString choosename(QString filepath);
+QString mkdir(QString path);

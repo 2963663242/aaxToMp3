@@ -180,13 +180,18 @@ TaskCellWidget* TaskTableWidget::cellWidget(int row) const
 
 void TaskTableWidget::onCellTaskFinished(QString filepath)
 {
+	static std::mutex mtx;
 	auto cell = static_cast<TaskCellWidget*>(sender());
 
 	QFileInfo fileInfo = QFileInfo(filepath);
-	if (fileInfo.isFile())
-		QDir().rename(filepath, Settings::getInstance()->getSavePath() + QDir::separator() + fileInfo.fileName());
+	mtx.lock();
+	if (fileInfo.isFile()) {
+		QString newFileName = Settings::getInstance()->getSavePath() + QDir::separator() + fileInfo.fileName();
+		QDir().rename(filepath, choosename(newFileName));
+	}
 	else
 		toMove(filepath, Settings::getInstance()->getSavePath());
+	mtx.unlock();
 	QTimer::singleShot(0, this, [=] {
 		
 		removeRow(this->rowOfCell(cell));

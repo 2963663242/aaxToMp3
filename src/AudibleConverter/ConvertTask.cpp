@@ -1,7 +1,7 @@
 #include "ConvertTask.h"
 #include "TaskTable.h"
 #include <QTemporaryDir>
-
+#include "Settings.h"
 void ConvertSTATECALLBACK::stateInform(ItemTable item) {
 	if (item.st == status::downloading)
 		emit this->updateProgress(item.rate);
@@ -63,9 +63,11 @@ QString ConvertTask::getSavePath()
 void ConvertTask::stop()
 {
 	this->converter->stop();
+	
 }
 
 
 void ConvertTask::start(QString format, convparam splitway) {
+	setSavePath(Settings::getInstance()->getSavePath());
 	this->converter->convert(meta,filename, splitway,format);
 }

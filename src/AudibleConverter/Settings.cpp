@@ -57,17 +57,18 @@ QStringList getFileNames(const QString& path)
     QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Name);
     return files;
 }
-bool toMove(const QString& srcPath, const QString& desPath) {
+bool toMove( QString srcPath,  QString desPath) {
 
     QStringList fileNames = getFileNames(srcPath);
-
+    QString src = QDir(srcPath).path();
+    src = src.mid(src.lastIndexOf("/"));
+    desPath = mkdir(desPath + src);
     foreach(const QString & filename, fileNames) {
-        QString src = QDir(srcPath).path();
-        src = src.mid(src.lastIndexOf("/"));
+       
         QString filepath = srcPath + QDir::separator() + filename;
         QString temp = filepath;
         QString suffix = temp.remove(0, srcPath.length());
-        QString desFileName = desPath + src+ suffix;
+        QString desFileName = desPath  +suffix;
 
 
         QFileInfo fileInfo(desFileName);
@@ -85,4 +86,33 @@ bool toMove(const QString& srcPath, const QString& desPath) {
         QFile::rename(filepath, desFileName);
     }
     return delDir(srcPath);
+}
+QString choosename(QString filepath) {
+    int i = 1;
+    while (true) {
+        if (!QFileInfo(filepath).exists())
+            return filepath;
+        QString tmppath = filepath.mid(0, filepath.length() - 4) + " (" + QString::asprintf("%d", i) + ")" + filepath.mid(filepath.length() - 4);
+        if (!QFileInfo(tmppath).exists())
+            return tmppath;
+        i += 1;
+    }
+}
+/*
+    数值递增的创建目录（如果目录已经存在）
+*/
+QString mkdir(QString path) {
+    int i = 1;
+    while (true) {
+        if (!QDir(path).exists()) {
+            QDir().mkpath(path);
+            return path;
+        }
+        QString tmpdirname = path + " (" + QString::asprintf("%d", i) + ")";
+        if (!QDir(tmpdirname).exists()) {
+            QDir().mkpath(tmpdirname);
+            return tmpdirname;
+        }
+        i += 1;
+    }
 }
