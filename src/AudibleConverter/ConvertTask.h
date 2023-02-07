@@ -17,6 +17,7 @@ public:
 signals:
 	void updateProgress(double rate);
 	void convertFinished(QString);
+	void convertError();
 };
 
 class ConvertTask :public QObject {

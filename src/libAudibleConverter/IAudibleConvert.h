@@ -14,7 +14,8 @@
 using namespace std;
 enum status {
 	downloading,
-	finished
+	finished,
+	error
 };
 struct ItemTable {
 	status st;

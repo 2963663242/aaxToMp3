@@ -8,6 +8,7 @@
 #include <QProcess>
 #include "settings.h"
 #include <qmath.h>
+#include <QTemporaryDir>
 using namespace std;
 QString get_meta_one(QString info, QString meta, QString endstr="\n");
 float sum(QList<float> list);
@@ -272,7 +273,8 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
 bool AudibleConvert::set_mp3_meta(QString filepath, AudibleMeta meta)
 {
     QString name = QFileInfo(filepath).fileName();
-    QString tmpfile = QDir::tempPath() + QDir::separator() + name;
+    QTemporaryDir file;
+    QString tmpfile = file.path() + QDir::separator() + name;
     QProcess process;
     connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
    process.start(this->EXE, { "-i", filepath, "-c", "copy", "-id3v2_version", "3",
@@ -299,7 +301,8 @@ bool AudibleConvert::set_mp3_meta(QString filepath, AudibleMeta meta)
 bool AudibleConvert::set_m4b_meta(QString filepath, AudibleMeta meta)
 {
     QString name = QFileInfo(filepath).fileName();
-    QString tmpfile = QDir::tempPath() + QDir::separator() + name;
+    QTemporaryDir file;
+    QString tmpfile = file.path() + QDir::separator() + name;
     QProcess process;
     connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
     process.start(this->EXE, { "-i", filepath, "-c:a", "copy",
@@ -326,7 +329,8 @@ bool AudibleConvert::set_m4b_meta(QString filepath, AudibleMeta meta)
 bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
 {
     QString name = QFileInfo(filepath).fileName();
-    QString tmpfile = QDir::tempPath() + QDir::separator() + name;
+    QTemporaryDir file;
+    QString tmpfile = file.path() + QDir::separator() + name;
     QProcess process;
     connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill, Qt::DirectConnection);
     process.start(this->EXE, { "-i", filepath, "-i", cover, "-map", "0:0", "-map", "1:0", "-c", "copy", "-id3v2_version", "3",
@@ -606,7 +610,8 @@ int AudibleConvert::timestamp(QString output)
 bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
 {
     QString name = QFileInfo(filepath).fileName();
-    QString tmpfile = QDir::tempPath() + QDir::separator() + name;
+    QTemporaryDir file;
+    QString tmpfile = file.path() + QDir::separator() + name;
     QFile aaxFile(filepath), covFile(cover);
     if (aaxFile.open(QIODevice::ReadOnly) && covFile.open(QIODevice::ReadOnly)) {
         

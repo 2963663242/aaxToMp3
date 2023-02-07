@@ -5,8 +5,11 @@
 void ConvertSTATECALLBACK::stateInform(ItemTable item) {
 	if (item.st == status::downloading)
 		emit this->updateProgress(item.rate);
-	else if (item.st == status::finished && !item.filepath.isEmpty()) {
+	else if (item.st == status::finished) {
 		emit this->convertFinished(item.filepath);
+	}
+	else if(item.st == status::error){
+		emit this->convertError();
 	}
 
 }
@@ -36,6 +39,8 @@ void ConvertTask::connectWidget(TaskCellWidget* parent)
 	QObject::connect(parent, &TaskCellWidget::startClicked, this, &ConvertTask::start);
 	QObject::connect(parent, &TaskCellWidget::stopClicked, this, &ConvertTask::stop);
 	connect(cb, &ConvertSTATECALLBACK::convertFinished, parent, &TaskCellWidget::taskFinished);
+	connect(cb, &ConvertSTATECALLBACK::convertError, parent, &TaskCellWidget::convertError);
+
 }
 
 void ConvertTask::setSavePath(QString savePath)

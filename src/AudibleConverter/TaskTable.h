@@ -48,11 +48,13 @@ signals:
 	void stopAll();
 public slots:
 	void setProgress(double rate);
+	void convertError();
 private:
 	QLabel* thumbnail;
 	QStackedWidget* buttonCheck;
 	QPushButton* btnStart;
 	QPushButton* btnStop;
+	QPushButton* btnReTry;
 	ConvertTask* task;
 	QStackedWidget* deepChange;
 	QComboBox* comboFormat;

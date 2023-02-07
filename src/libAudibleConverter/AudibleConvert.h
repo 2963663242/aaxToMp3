@@ -11,7 +11,10 @@ public:
 	}
 
 	~ItemSender() {
-		item->st = status::finished;
+		if(item->filepath.isEmpty())
+			item->st = status::error;
+		else
+			item->st = status::finished;
 		callback->stateInform(*item);
 	}
 public:

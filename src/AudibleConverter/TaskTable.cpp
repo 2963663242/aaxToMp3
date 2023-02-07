@@ -10,12 +10,12 @@ TaskTableWidget::TaskTableWidget(QWidget* parent):QTableWidget(parent) {
 	setStyleSheet("QTableWidget {"
 		"selection-background-color: rgb(227, 227, 229);"
 		"}");
-	/*for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		
-		QString filePath = QString::fromLocal8Bit(R"(D:\Users\Downloads\TheGreatestMenaceInsidetheGayPrisonExperiment_ep7.aax)");
-		ConvertTask task(filePath);
+		QString filePath = QString::fromLocal8Bit(R"(C:\1.FabiFuchsundderverloreneNuss-SchatzFabiFuchs_ep7.aax)");
+		ConvertTask *task = new ConvertTask(filePath, Settings::getInstance()->getSavePath());
 		addTask(task);
-	}*/
+	}
 }
 
 TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent), task(task) {
@@ -86,6 +86,7 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 	
 	btnStart = new QPushButton(QString::fromLocal8Bit("¿ªÊ¼"));
 	btnStop = new QPushButton(QString::fromLocal8Bit("Í£Ö¹"));
+	btnReTry = new QPushButton(QString::fromLocal8Bit("ÖØÊÔ"));
 	auto btnset = [](QPushButton * btn) {
 		btn->setFixedSize(TaskCellHeight - 10, 50);
 		QWidget* w = new QWidget();
@@ -93,10 +94,21 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 		lay1->addWidget(btn, 1, Qt::AlignHCenter);
 		return w;
 	};
-	
+	auto reTrybtnset = [](QPushButton* btn) {
+		btn->setFixedSize(TaskCellHeight - 10, 50);
+		QWidget* w = new QWidget();
+		QLabel *LabFail = new QLabel(QString::fromLocal8Bit("Ê§°Ü"));
+		LabFail->setStyleSheet("color:rgb(255,0,0)");
+		QVBoxLayout* lay1 = new QVBoxLayout(w);
+		lay1->addItem(new QSpacerItem(0,25));
+		lay1->addWidget(btn, 1, Qt::AlignHCenter);
+		lay1->addWidget(LabFail);
+		return w;
+	};
 	buttonCheck->addWidget(btnset(btnStart));
 	buttonCheck->addWidget(btnset(btnStop));
-	
+	buttonCheck->addWidget(reTrybtnset(btnReTry));
+	//buttonCheck->setCurrentIndex(2);
 	topLayout->addWidget(thumbnail);
 	
 	topLayout->addLayout(midLayout);
@@ -110,6 +122,7 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 		deepChange->setCurrentIndex(0);
 		buttonCheck->setCurrentIndex(0);
 		});
+	connect(btnReTry, &QPushButton::clicked, btnStart, &QPushButton::clicked);
 	task->connectWidget(this);
 	connect(btnStart, &QPushButton::clicked, [this]() {
 		QString format = comboFormat->currentText();
@@ -125,7 +138,7 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 		emit this->stopClicked();
 		});
 	connect(this, &TaskCellWidget::startAll, [this]() {
-		if(this->buttonCheck->currentIndex() == 0)
+		if(this->buttonCheck->currentIndex() == 0 || this->buttonCheck->currentIndex() == 2)
 			emit this->btnStart->clicked();
 		});
 	connect(this, &TaskCellWidget::stopAll, [this]() {
@@ -201,6 +214,9 @@ int TaskCellWidget::cellHeight()
 void TaskCellWidget::setProgress(double rate) {
 	this->progress->setValue(rate);
 
+}
+void TaskCellWidget::convertError() {
+	this->buttonCheck->setCurrentIndex(2);
 }
 
 
