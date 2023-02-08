@@ -22,7 +22,7 @@ ConvertTask::ConvertTask(QString filename,QString  savePath) :filename(filename)
 	setSavePath(savePath);
 	converter->setCallback(cb);
 	meta = this->converter->getMeta(filename);
-	
+	qDebug() << "task create ,filename: " << filename << "savePath: "<<this->savePath;
 	
 }
 

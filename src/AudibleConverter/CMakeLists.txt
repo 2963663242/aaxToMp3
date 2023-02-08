@@ -12,12 +12,12 @@ target_include_directories(AudibleConverter PUBLIC
      ${CMAKE_CURRENT_SOURCE_DIR}/../libAudibleConverter
 )
 
-SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_HOME_DIRECTORY}/build)
+SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 target_link_libraries(AudibleConverter libAudibleConverter)
 target_link_libraries(AudibleConverter Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets)
 
 # target_link_libraries(AudibleConverter 
 # 	${CMAKE_HOME_DIRECTORY}/build/src/libAudibleConverter/Debug/libAudibleConverter.lib)
-# set_target_properties(AudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
-set_target_properties(AudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/build/Debug)
+set_target_properties(AudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+# set_target_properties(AudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/build/Debug)

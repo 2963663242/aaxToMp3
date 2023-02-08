@@ -41,6 +41,8 @@ AudibleConvert::~AudibleConvert()
 }
 AudibleMeta AudibleConvert::getMeta(QString filepath)
 {
+    FUNCTINLOG
+
     AudibleMeta meta;
     QByteArray cover_data = "";
     QString coverpath = "";
@@ -82,7 +84,7 @@ AudibleMeta AudibleConvert::getMeta(QString filepath)
         meta.comments = comment;
 
     coverpath = QDir(setting.coverpath).absoluteFilePath(getmd5(filepath) + ".jpg");
-    qDebug() << coverpath;
+
         
     QString typ = this->check_type(filepath);
         

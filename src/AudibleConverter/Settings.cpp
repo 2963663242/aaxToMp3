@@ -1,12 +1,13 @@
 #include "Settings.h"
 #include <QDir>
-
+#include <QDateTime>
 Settings* Settings::instance = nullptr;
 
 Settings::Settings() {
 	savePath = QDir::homePath() + QDir::separator() + "AAXConverter";
 	if (!QDir(savePath).exists())
 		QDir().mkpath(savePath);
+  
 }
 
 void Settings::setSavePath(QString savePath)
@@ -19,6 +20,11 @@ QString Settings::getSavePath()
 {
 	std::lock_guard<std::mutex> lockGuard(s_mutex);
 	return Settings::savePath;
+}
+
+std::ofstream& Settings::getLogFile()
+{
+    return g_OutputDebug;
 }
 
 Settings* Settings::getInstance()
@@ -116,3 +122,5 @@ QString mkdir(QString path) {
         i += 1;
     }
 }
+
+
