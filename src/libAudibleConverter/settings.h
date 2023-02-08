@@ -1,8 +1,13 @@
 #include <QString>
 #include <fstream>
+#include <mutex>
 #include <plog/Log.h> // Step1: include the headers
 #include <plog/Initializers/RollingFileInitializer.h>
+#include <QDir>
 using namespace std;
+
+#define LOGNAME QDir::separator() + "AudibleConverter_info.txt"
+
 class settings {
 public:
 
@@ -11,31 +16,37 @@ public:
 
 public:
 	 QString coverpath;
-	 QString outputPath;
-	 std::ofstream g_OutputDebug;
+	 QString outputPath; 
+	plog::RollingFileAppender<plog::TxtFormatter> fileAppender;
 };
-void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg);
+
 
 extern  settings setting;
 
 class FuncPrint
 {
 public:
-	FuncPrint(string func)
+	FuncPrint(string func, void * Audible=0)
 	{
 		func_name = func;
-		PLOGD << "<<<<<<Enter function: " << func_name ;
+		this->Audible = Audible;
+		PLOGD << Audible << "<<<<<<Enter function: " << func_name ;
 		
 	}
 
 	~FuncPrint()
 	{
-		PLOGD << ">>>>>>Exit function: " << func_name;
+		PLOGD << Audible << ">>>>>>Exit function: " << func_name;
 		
 	}
 
 private:
 	string func_name;
+	void* Audible;
 };
 
-#define FUNCTINLOG FuncPrint logger(std::string(__FUNCSIG__));
+
+#define FUNCTINLOG FuncPrint logger(__FUNCSIG__,this);
+#define FUNCLOG FuncPrint logger(__FUNCSIG__);
+
+#define THREADSAFE static std::mutex mtx;std::lock_guard<std::mutex> lockGuard(mtx);

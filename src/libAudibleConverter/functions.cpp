@@ -2,19 +2,22 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QCryptographicHash>
-
+#include "settings.h"
 QString getExeDirectory()
 {
+	FUNCLOG
 	return QCoreApplication::applicationDirPath();
 }
 
 QString os_sep(QString path)
 {
+	FUNCLOG
 	return path.replace('/',QDir::separator()).replace('\\', QDir::separator());
 }
 
 QString getmd5(QString value)
 {
+	FUNCLOG
 	QCryptographicHash md(QCryptographicHash::Md5);
 	md.addData(value.toUtf8());
 	QByteArray bb = md.result();
@@ -23,6 +26,7 @@ QString getmd5(QString value)
 
 QByteArray get_cover_from_aax(QString aaxfile)
 {
+	FUNCLOG
 	int index = 0;
 	QByteArray flag = "covr";
 	QByteArray cover_data = "";
@@ -65,6 +69,7 @@ QByteArray get_cover_from_aax(QString aaxfile)
 
 QByteArray get_cover_from_aa(QString aafile)
 {
+	FUNCLOG
 	QByteArray magic_jfif = "\xff\xd8\xff\xe0\x00\x10JFIF";
 	QByteArray magic_exif = "\xff\xd8\xff\xe1\x00\x18";
 	magic_exif = magic_exif.append("Exif");
@@ -107,6 +112,7 @@ QByteArray get_cover_from_aa(QString aafile)
 }
 
 QString choosename(QString filepath) {
+	FUNCLOG
 	int i = 1;
 	while (true) {
 		if (!QFileInfo(filepath).exists())
@@ -121,6 +127,7 @@ QString choosename(QString filepath) {
 	数值递增的创建目录（如果目录已经存在）
 */
 QString mkdir(QString path) {
+	FUNCLOG
 	int i = 1;
 	while (true) {
 		if (!QDir(path).exists()) {

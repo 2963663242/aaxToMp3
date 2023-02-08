@@ -10,12 +10,12 @@ TaskTableWidget::TaskTableWidget(QWidget* parent):QTableWidget(parent) {
 	setStyleSheet("QTableWidget {"
 		"selection-background-color: rgb(227, 227, 229);"
 		"}");
-	for (int i = 0; i < 3; i++) {
+	/*for (int i = 0; i < 3; i++) {
 		
 		QString filePath = QString::fromLocal8Bit(R"(C:\1.FabiFuchsundderverloreneNuss-SchatzFabiFuchs_ep7.aax)");
 		ConvertTask *task = new ConvertTask(filePath, Settings::getInstance()->getSavePath());
 		addTask(task);
-	}
+	}*/
 }
 
 TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent), task(task) {

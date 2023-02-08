@@ -15,7 +15,8 @@ float sum(QList<float> list);
 
 AudibleConvert::AudibleConvert(QString settingsPath)
 {
-    
+    FUNCTINLOG
+    THREADSAFE
     this->settingsPath = settingsPath;
     this->EXE = QDir::separator() == '\\' ? "plugins/win" : "plugins/mac";
     this->EXE = os_sep(getExeDirectory() + QDir::separator() + this->EXE);
@@ -114,6 +115,7 @@ AudibleMeta AudibleConvert::getMeta(QString filepath)
 }
 QString AudibleConvert::seek_code(QString checksum)
 {
+    FUNCTINLOG
     QByteArray data;
     if (this->d.isEmpty()) {
         QFile file(this->CFGFILE);
@@ -157,6 +159,7 @@ QString AudibleConvert::seek_code(QString checksum)
 }
 QString AudibleConvert::compute(QString checksum)
 {
+    FUNCTINLOG
     
     if (QDir::separator() == '\\') {
         QProcess process;
@@ -194,6 +197,7 @@ QString AudibleConvert::compute(QString checksum)
 }
 QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
 {
+    FUNCTINLOG
     QString typ = this->check_type(filepath);
     if (typ == "aa") {
         int one_k = 100;
@@ -274,6 +278,7 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
 }
 bool AudibleConvert::set_mp3_meta(QString filepath, AudibleMeta meta)
 {
+    FUNCTINLOG
     QString name = QFileInfo(filepath).fileName();
     QTemporaryDir file;
     QString tmpfile = file.path() + QDir::separator() + name;
@@ -302,6 +307,7 @@ bool AudibleConvert::set_mp3_meta(QString filepath, AudibleMeta meta)
 
 bool AudibleConvert::set_m4b_meta(QString filepath, AudibleMeta meta)
 {
+    FUNCTINLOG
     QString name = QFileInfo(filepath).fileName();
     QTemporaryDir file;
     QString tmpfile = file.path() + QDir::separator() + name;
@@ -330,6 +336,7 @@ bool AudibleConvert::set_m4b_meta(QString filepath, AudibleMeta meta)
 
 bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
 {
+    FUNCTINLOG
     QString name = QFileInfo(filepath).fileName();
     QTemporaryDir file;
     QString tmpfile = file.path() + QDir::separator() + name;
@@ -352,7 +359,8 @@ bool AudibleConvert::set_mp3_cover(QString filepath, QString cover)
 
 QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam convp, QString ext)
 {
-   
+    PLOGI << this <<"convert start,QString filepath=" << filepath << "convparam convp=" << convp << "QString ext=" <<ext<< " ----------------------------------------------------";
+    FUNCTINLOG
     ItemTable item;
     ItemSender sender(&item,this->callback);
     double progress = 0.0;
@@ -398,6 +406,7 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         QProcess process;
         connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill,Qt::DirectConnection);
         QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
+            
             QString content = process.readAllStandardError().data();
             if (content.indexOf("size=") == -1) return;
             double _progress = this->timestamp(content) / duration * 100;
@@ -528,11 +537,13 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
 
 void AudibleConvert::setCallback(STATECALLBACK* callback)
 {
+    FUNCTINLOG
     this->callback = callback;
 }
 
 void AudibleConvert::stop()
 {
+    FUNCTINLOG
     this->mtx.lock();
     this->isConverting = false;
     this->mtx.unlock();
@@ -541,6 +552,7 @@ void AudibleConvert::stop()
 
 void AudibleConvert::setStartState()
 {
+    FUNCTINLOG
     this->mtx.lock();
     this->isConverting = true;
     this->mtx.unlock();
@@ -548,6 +560,7 @@ void AudibleConvert::setStartState()
 
 bool AudibleConvert::isStop()
 {
+    FUNCTINLOG
     bool stop =  false;
     this->mtx.lock();
     stop =  !this->isConverting;
@@ -556,7 +569,7 @@ bool AudibleConvert::isStop()
 }
 
 QString AudibleConvert::check_type(QString filepath) {
-    
+    FUNCLOG
     char bs[12] = {0,};
     ifstream infile;
     infile.open(filepath.toStdString());
@@ -573,6 +586,7 @@ QString AudibleConvert::check_type(QString filepath) {
 
 bool AudibleConvert::verify_code(QString code)
 {
+    FUNCLOG
     QString str = "0123456789abcdefabcdef";
     
     for each (QChar c in code)
@@ -585,12 +599,14 @@ bool AudibleConvert::verify_code(QString code)
 
 QString AudibleConvert::validate_title(QString title)
 {
+    FUNCLOG
     QRegExp rx("[\\/\\\\\\:\\*\\?\\\"\\<\\>\\|]");
     return title.replace(rx, "_");
 }
 
 int AudibleConvert::timestamp(QString output)
 {
+    FUNCLOG
     QList<QString>resultSet;
     QRegExp rx("time=(\\d{2,}):(\\d{2})+:(\\d{2})+\\.");
     int pos = 0;
@@ -611,6 +627,7 @@ int AudibleConvert::timestamp(QString output)
 
 bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
 {
+    FUNCTINLOG
     QString name = QFileInfo(filepath).fileName();
     QTemporaryDir file;
     QString tmpfile = file.path() + QDir::separator() + name;
@@ -687,12 +704,14 @@ bool AudibleConvert::set_m4b_cover(QString filepath, QString cover)
 
 void AudibleConvert::setSavePath(QString savePath)
 {
+    FUNCTINLOG
     this->savePath = savePath;
     return ;
 }
 
 
 QString get_meta_one(QString info, QString meta, QString endstr) {
+    FUNCLOG
     if (info.indexOf(meta) > 0) {
         int start = info.indexOf(meta) + meta.length();
         int end = info.indexOf(endstr, start);
@@ -707,6 +726,7 @@ QString get_meta_one(QString info, QString meta, QString endstr) {
 }
 
 float sum(QList<float> list) {
+    FUNCLOG
     float sum(0);
     for each (float one in list) {
         sum += one;

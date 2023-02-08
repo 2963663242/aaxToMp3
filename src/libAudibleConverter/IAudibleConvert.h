@@ -72,6 +72,7 @@ public:
 	static QString check_type(QString filepath);
 	static IAudibleConvert* Create();
 	static void Release(IAudibleConvert*);
+	static void setLogPath(QString logPath);
 };
 
 
