@@ -1,6 +1,6 @@
 #include <AudibleConvert.h>
 #include "settings.h"
-
+#include <thread>
 
 
 
@@ -35,7 +35,7 @@ QString IAudibleConvert::check_type(QString filepath)
 IAudibleConvert* IAudibleConvert::Create()
 {
 	FUNCLOG
-	return new AudibleConvert("C:\\Users\\Administrator\\AppData\\Roaming\\.AAXConverter");
+	return new AudibleConvert(setting.confpath);
 }
 
 void IAudibleConvert::Release(IAudibleConvert* converter)

@@ -9,6 +9,7 @@
 #include "settings.h"
 #include <qmath.h>
 #include <QTemporaryDir>
+
 using namespace std;
 QString get_meta_one(QString info, QString meta, QString endstr="\n");
 float sum(QList<float> list);
@@ -139,9 +140,11 @@ QString AudibleConvert::seek_code(QString checksum)
     }
 
     QString code = "";
-#ifdef _WIN64
+
+    PLOGD << "start compute activate_code,checksum="<<checksum;
     code = this->compute(checksum);
-#endif
+    PLOGD << " finished compute  activate_code,activate_code="<<code;
+
     if (!code.isEmpty()) {
         this->d[checksum] = code;
         QJsonDocument jsonDoc;
@@ -227,7 +230,8 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
                 idxs.append(pos);
             }
             QList<int> points;
-            for each (int idx in idxs) {
+            for (int i=0 ;i<idxs.length(); i++) {
+                int idx =idxs[i];
                 fp.seek(idx + MAGIC.length());
                 QByteArray packed_data = fp.read(4);
                 bool ok;
@@ -235,7 +239,8 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
                 points.append(point);
             }
             QList<float> fPoints;
-            for each (int p in points) {
+            for (int i=0 ;i<points.length(); i++) {
+                int p =points[i];
                 fPoints.append((float)p / bytes_per_second);
             }
             QList<QList<float>> rs;
@@ -258,7 +263,9 @@ QList<QList<float>> AudibleConvert::get_chapters(QString filepath)
         process.waitForFinished(-1);
         QString output = process.readAllStandardError().data();
         QList<QList<float>> rs;
-        for each (QString line in output.split("\n")) {
+        QStringList outputList = output.split("\n");
+        for(int i=0 ;i<outputList.length(); i++) {
+            QString line =outputList[i];
             if (line.simplified().startsWith("Chapter #")) {
                 int pos = 0;
                 QList<float> result;
@@ -445,15 +452,15 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     QList<QList<QString>> cmds;
     if (mime == "aa") {
         int idx = 0;
-        for each (QList<float> item_ in split_points) {
+        for (int i=0 ;i<split_points.length(); i++){
+            QList<float> item_ =split_points[i];
             QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
             QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
             int path_length = secure_outpath.length();
             if (path_length > 245)
                 secure_outpath = outdir + QDir::separator() +
                 name.mid(0, 245) + QString::asprintf("--%04d", (idx + 1)) + ext;
-            cmds.append({ "-y", "-i", filepath, "-ss", QString::asprintf("%f",item_[0]), "-t",QString::asprintf("%f", item_[1] - item_[0]), "-metadata",
-                QString::asprintf("title=%s",title), secure_outpath });
+            cmds.append({ "-y", "-i", filepath, "-ss", QString::asprintf("%f",item_[0]), "-t",QString::asprintf("%f", item_[1] - item_[0]), "-metadata","title="+title, secure_outpath });
             idx++;
         }
 
@@ -462,7 +469,8 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         QString act_code = this->seek_code(meta.checksum);
         if (ext.toLower() == ".m4b") {
             int idx = 0;
-            for each (QList<float> item_ in split_points) {
+            for (int i=0 ;i<split_points.length(); i++){
+                QList<float> item_ =split_points[i];
                 QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
                 QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
                 int path_length = secure_outpath.length();
@@ -477,7 +485,8 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
          }
         else {
             int idx = 0;
-            for each (QList<float> item_ in split_points) {
+            for (int i=0 ;i<split_points.length(); i++){
+                QList<float> item_ =split_points[i];
                 QString secure_outpath = outdir + QDir::separator() + name + QString::asprintf("--%04d", (idx + 1)) + ext;
                 QString title = "title=\"" + name + QString::asprintf("--%04d", (idx + 1)) + "\"";
                 int path_length = secure_outpath.length();
@@ -500,7 +509,8 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
     if (isStop())
         return "";
     int idx = 0;
-    for each (QList<QString> cmd in cmds) {
+    for (int i=0 ;i<cmds.length(); i++){
+        QList<QString> cmd = cmds[i];
         QProcess process;
         connect(this, &AudibleConvert::killProcess, &process, &QProcess::kill,Qt::DirectConnection);
         QObject::connect(&process, &QProcess::readyReadStandardError, [&]() {
@@ -523,8 +533,8 @@ QString AudibleConvert::process(AudibleMeta meta,QString filepath,convparam conv
         idx++;
     }
     QStringList files = QDir(outdir).entryList(QDir::Files);
-    for each (QString f in files) {
-       
+    for (int i=0 ;i<files.length(); i++){
+        QString f =files[i];
         if (ext == ".mp3")
             this->set_mp3_cover(outdir + QDir::separator() + f, meta.cover());
         else
@@ -590,8 +600,9 @@ bool AudibleConvert::verify_code(QString code)
     FUNCLOG
     QString str = "0123456789abcdefabcdef";
     
-    for each (QChar c in code)
+    for (int i=0 ;i<code.length(); i++)
     {
+        QChar c =code[i];
         if (str.indexOf(c)==-1)
             return false;
     }
@@ -729,7 +740,8 @@ QString get_meta_one(QString info, QString meta, QString endstr) {
 float sum(QList<float> list) {
     FUNCLOG
     float sum(0);
-    for each (float one in list) {
+    for (int i=0 ;i<list.length(); i++){
+        float one =list[i];
         sum += one;
     }
     return sum;

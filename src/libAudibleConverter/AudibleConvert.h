@@ -2,6 +2,7 @@
 #include <QJsonObject>
 #include <mutex>
 #include <IAudibleConvert.h>
+#include <QObject>
 using namespace std;
 class ItemSender {
 public:

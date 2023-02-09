@@ -74,16 +74,16 @@ QByteArray get_cover_from_aa(QString aafile)
 	QByteArray magic_exif = "\xff\xd8\xff\xe1\x00\x18";
 	magic_exif = magic_exif.append("Exif");
 
-	QByteArray flagAry[] = { magic_exif, magic_jfif };
+	QList<QByteArray> flagAry = { magic_exif, magic_jfif };
 	QByteArray cover_data = "";
 	int length = 4096;
 	int count = 0;
 
 	QFile f(aafile);
 	f.open(QIODevice::ReadOnly);
-	
-	for each (QByteArray flag in  flagAry)
-	{
+  
+	for (int i=0 ;i<flagAry.size(); i++)
+    {QByteArray flag =flagAry[i];
 		f.seek(0);
 		if (!cover_data.isEmpty())
 			break;

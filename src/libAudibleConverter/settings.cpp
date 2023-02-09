@@ -16,14 +16,14 @@ settings::settings(): fileAppender((QString(".")+ LOGNAME).toUtf8())
 
 	
 #ifdef Q_OS_MAC
-	QString confpath = QDir::homePath();
+	confpath = QDir::homePath();
 	QString homepath = confpath;
 	this->coverpath = confpath + "/."+ CLASSNAME + "/cover/";
 #endif
 
 #ifdef Q_OS_WIN32
 // win
-	QString confpath =  QProcessEnvironment::systemEnvironment().value("APPDATA");
+	confpath =  QProcessEnvironment::systemEnvironment().value("APPDATA");
 	QString homepath = QDir::homePath();
 	this->coverpath = confpath + "\\"+ CLASSNAME +"\\cover\\";
 #endif

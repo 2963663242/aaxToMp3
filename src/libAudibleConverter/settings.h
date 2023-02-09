@@ -16,7 +16,8 @@ public:
 
 public:
 	 QString coverpath;
-	 QString outputPath; 
+	 QString outputPath;
+    QString confpath;
 	plog::RollingFileAppender<plog::TxtFormatter> fileAppender;
 };
 
@@ -46,7 +47,13 @@ private:
 };
 
 
-#define FUNCTINLOG FuncPrint logger(__FUNCSIG__,this);
-#define FUNCLOG FuncPrint logger(__FUNCSIG__);
+#ifdef _WIN32
+    #define FUNCTINLOG FuncPrint logger(__FUNCSIG__,this);
+    #define FUNCLOG FuncPrint logger(__FUNCSIG__);
+#elif defined __APPLE__
+    #define FUNCTINLOG FuncPrint logger(__FUNCTION__,this);
+    #define FUNCLOG FuncPrint logger(__FUNCTION__);
+#endif
+
 
 #define THREADSAFE static std::mutex mtx;std::lock_guard<std::mutex> lockGuard(mtx);

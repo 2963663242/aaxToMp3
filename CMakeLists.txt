@@ -10,14 +10,16 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+IF(APPLE)
+	set(CMAKE_GENERATOR_PLATFORM x64)
+ENDIF()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/build/${CMAKE_GENERATOR_PLATFORM})
 
 add_subdirectory(src/libAudibleConverter)
 add_subdirectory(src/AudibleConverter)
 
 
-# 打印所有变量 
+#打印所有变量 
 # function(print_directory_variables dir)
 #     # Dump variables:
 #     get_property(_variableNames DIRECTORY ${dir} PROPERTY VARIABLES)
@@ -28,5 +30,5 @@ add_subdirectory(src/AudibleConverter)
 #     endforeach()
 # endfunction(print_directory_variables)
 
-# for example
+# #for example
 # print_directory_variables(.)
