@@ -39,7 +39,7 @@ void ConvertTask::connectWidget(TaskCellWidget* parent)
 	QObject::connect(parent, &TaskCellWidget::startClicked, this, &ConvertTask::start);
 	QObject::connect(parent, &TaskCellWidget::stopClicked, this, &ConvertTask::stop);
 	connect(cb, &ConvertSTATECALLBACK::convertFinished, parent, &TaskCellWidget::taskFinished);
-	connect(cb, &ConvertSTATECALLBACK::convertError, parent, &TaskCellWidget::convertError);
+	connect(cb, &ConvertSTATECALLBACK::convertError, parent, &TaskCellWidget::OnConvertError);
 
 }
 

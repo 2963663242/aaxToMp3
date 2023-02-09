@@ -220,8 +220,9 @@ void TaskCellWidget::setProgress(double rate) {
 	this->progress->setValue(rate);
 
 }
-void TaskCellWidget::convertError() {
+void TaskCellWidget::OnConvertError() {
 	this->buttonCheck->setCurrentIndex(2);
+	this->deepChange->setCurrentIndex(0);
 }
 
 

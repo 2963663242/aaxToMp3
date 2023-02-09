@@ -48,7 +48,7 @@ signals:
 	void stopAll();
 public slots:
 	void setProgress(double rate);
-	void convertError();
+	void OnConvertError();
 private:
 	QLabel* thumbnail;
 	QStackedWidget* buttonCheck;

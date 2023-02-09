@@ -118,6 +118,7 @@ QString AudibleConvert::seek_code(QString checksum)
     FUNCTINLOG
     QByteArray data;
     if (this->d.isEmpty()) {
+        THREADSAFE
         QFile file(this->CFGFILE);
         if (file.open(QIODevice::ReadOnly)) {
             data = file.readAll();
