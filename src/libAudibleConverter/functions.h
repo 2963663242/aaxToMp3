@@ -1,6 +1,8 @@
 #include <qstring.h>
-
-
+#ifdef __APPLE__
+#include <unistd.h>
+std::string get_executable_dir();
+#endif
 QString getExeDirectory();
 QString os_sep(QString path);
 QString getmd5(QString value);
