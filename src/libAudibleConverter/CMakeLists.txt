@@ -19,7 +19,7 @@ SET_TARGET_PROPERTIES(${LIBAUDIBLECONVERTER} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 
 add_custom_command(
   TARGET ${LIBAUDIBLECONVERTER} POST_BUILD
-  COMMAND xcopy  "\"$(SolutionDir)../sdk/win/bin\"" "\"$(OutDir)\""  /E /Y
+  COMMAND xcopy  "\"${CMAKE_SOURCE_DIR}/sdk/win/bin\"" "\"$(OutDir)\""  /E /Y
   )
   
 # set_target_properties(libAudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
