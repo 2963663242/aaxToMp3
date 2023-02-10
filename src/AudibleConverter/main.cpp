@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <stdio.h>
 #include <QApplication>
-#include "functions.h"
+#include "Settings.h"
 int main(int argc, char *argv[])
 {
 #ifdef __APPLE__

@@ -1,6 +1,34 @@
 #include "Settings.h"
 #include <QDir>
 #include <QDateTime>
+ #ifdef __APPLE__
+
+ #include <CoreFoundation/CFBundle.h>
+
+ std::string get_executable_dir()
+ {
+
+   CFURLRef resourceURL = CFBundleCopyExecutableURL(CFBundleGetMainBundle());
+     std::string bunddlePath;
+     char resourcePath[PATH_MAX];
+   if (CFURLGetFileSystemRepresentation(resourceURL, true,
+                                        (UInt8 *)resourcePath,
+                                        PATH_MAX))
+   {
+     if (resourceURL != NULL)
+     {
+       CFRelease(resourceURL);
+     }
+       bunddlePath = resourcePath;
+       bunddlePath = bunddlePath.substr(0,bunddlePath.find_last_of("/"));
+      
+     return std::string(bunddlePath);
+   }
+     return "";
+ }
+
+ #endif
+
 Settings* Settings::instance = nullptr;
 
 Settings::Settings() {

@@ -2,6 +2,10 @@
 #include <mutex>
 #include <QString>
 #include <fstream>
+#ifdef __APPLE__
+#include <unistd.h>
+std::string get_executable_dir();
+#endif
 class Settings
 {
 private:
