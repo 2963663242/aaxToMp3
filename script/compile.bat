@@ -1,7 +1,7 @@
 set WORKSPACE=%~dp0..
 set BUILD_AUDIBLE=%WORKSPACE%\build
 
-if not exist %WORKSPACE% (
+if not exist %BUILD_AUDIBLE% (
 	mkdir "%BUILD_AUDIBLE%"
 )
 
