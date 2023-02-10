@@ -6,10 +6,22 @@ file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOUR
 set(PROJECT_SOURCES ${SOURCE_FILES})
 
 set(OUTDIR CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-add_library(${LIBAUDIBLECONVERTER} SHARED ${PROJECT_SOURCES}
-)
+IF(MSVC)
+# 生成版本资源文件
+set(SRC_VERSION_DIR ${CMAKE_CURRENT_SOURCE_DIR}/version)
+set(TARGET_VERSION_DIR ${CMAKE_BINARY_DIR}/version/)
+configure_file(${SRC_VERSION_DIR}/version.h.in ${TARGET_VERSION_DIR}/version.h)
+configure_file(${SRC_VERSION_DIR}/version.rc.in ${TARGET_VERSION_DIR}/version.rc)
+file(GLOB VERSION_FILES "${TARGET_VERSION_DIR}/*.rc" "${TARGET_VERSION_DIR}/*.h")
+ENDIF()
+#添加源文件
+add_library(${LIBAUDIBLECONVERTER} SHARED ${PROJECT_SOURCES} ${VERSION_FILES})
 
+# 添加头文件目录
+#target_include_directories(${LIBAUDIBLECONVERTER} PUBLIC ${CMAKE_BINARY_DIR}/version)
 target_include_directories(${LIBAUDIBLECONVERTER} PUBLIC ${CMAKE_SOURCE_DIR}/sdk/include)
+
+# 链接动态库
 target_link_libraries(${LIBAUDIBLECONVERTER} Qt${QT_VERSION_MAJOR}::Core)
 
 
@@ -38,4 +50,6 @@ ELSE()
 ENDIF()
   
 # set_target_properties(libAudibleConverter PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
+
 
