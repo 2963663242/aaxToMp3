@@ -19,11 +19,27 @@ echo 生成工程
 if [ $CMAKE_PREFIX_PATH ];then
     cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH"
 else
-    cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode --config $CONFIG
+    cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode 
 fi
+
+
+
+
+echo 获取git版本号
+svnInfoResult=`git rev-list HEAD --count`
+svnVersion=${svnInfoResult##* }
+DYLIB_CURRENT_VERSION="1.1.${svnVersion}"
+DYLIB_COMPATIBILITY_VERSION="1.0.1"
+GCC_PREPROCESSOR_DEFINITIONS="LIB_VERSION=\\\"${DYLIB_CURRENT_VERSION}\\\""
+
 
 
 echo 编译代码
 
-cmake --build "$BUILD_DIR" 
+BUILD_SETTING=" -configuration $CONFIG DYLIB_CURRENT_VERSION=${DYLIB_CURRENT_VERSION} DYLIB_COMPATIBILITY_VERSION=${DYLIB_COMPATIBILITY_VERSION} GCC_PREPROCESSOR_DEFINITIONS=${GCC_PREPROCESSOR_DEFINITIONS} build"
+
+xcodebuild -project $BUILD_DIR/libAudibleConverter.xcodeproj -target libAudibleConverter $BUILD_SETTING
+xcodebuild -project $BUILD_DIR/libAudibleConverter.xcodeproj -target AudibleConverter $BUILD_SETTING
+
+
 
