@@ -14,8 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     tab = new MyTabWidget;
 
     convertWidget = new ConvertWidget;
-    tab->addTab(new QWidget, QString::fromLocal8Bit("   œ¬‘ÿ  "));
-    tab->addTab(convertWidget, QString::fromLocal8Bit("   ◊™ªª  "));
+    tab->addTab(new QWidget, "   ‰∏ãËΩΩ  ");
+    tab->addTab(convertWidget, "   ËΩ¨Êç¢  ");
     
    
 

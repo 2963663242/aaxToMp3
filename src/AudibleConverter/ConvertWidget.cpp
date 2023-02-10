@@ -9,7 +9,7 @@
 #include "Settings.h"
 ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 	
-	addFile = new QPushButton(QString::fromLocal8Bit("Ìí¼ÓÎÄ¼ş"));
+	addFile = new QPushButton("æ·»åŠ æ–‡ä»¶");
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
 	QHBoxLayout* headerLayout = new QHBoxLayout;
 	headerLayout->addItem(new QSpacerItem(10,0, QSizePolicy::Fixed));
@@ -24,11 +24,11 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 	
 	footLayout->setContentsMargins(0, 0, 0, 0);
 
-	openSave = new QPushButton(QString::fromLocal8Bit("´ò¿ªÎÄ¼ş¼Ğ"));
-	selectSave = new QPushButton(QString::fromLocal8Bit("ÉèÖÃÎÄ¼ş¼Ğ"));
+	openSave = new QPushButton("æ‰“å¼€æ–‡ä»¶å¤¹");
+	selectSave = new QPushButton("è®¾ç½®æ–‡ä»¶å¤¹");
 	labSavePath = new QLabel(Settings::getInstance()->getSavePath());
-	allStart = new QPushButton(QString::fromLocal8Bit("È«²¿¿ªÊ¼"));
-	allStop = new QPushButton(QString::fromLocal8Bit("È«²¿Í£Ö¹"));
+	allStart = new QPushButton("å…¨éƒ¨å¼€å§‹");
+	allStop = new QPushButton("å…¨éƒ¨åœæ­¢");
 	
 	footLayout->addWidget(openSave);
 	footLayout->addWidget(selectSave);
@@ -54,7 +54,7 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 		QDesktopServices::openUrl(QUrl("file:///"+this->labSavePath->text()));
 		});
 	connect(selectSave, &QPushButton::clicked, [this]() {
-		QString imageFolder = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("Ñ¡ÔñÎÄ¼ş±£´æÂ·¾¶"), "./", QFileDialog::ShowDirsOnly);
+		QString imageFolder = QFileDialog::getExistingDirectory(this, "é€‰æ‹©æ–‡ä»¶ä¿å­˜è·¯å¾„", "./", QFileDialog::ShowDirsOnly);
 		this->labSavePath->setText(imageFolder);
 		Settings::getInstance()->setSavePath(imageFolder);
 		});
@@ -62,7 +62,7 @@ ConvertWidget::ConvertWidget(QWidget* parent) :QWidget(parent) {
 
 void ConvertWidget::importFile() {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		QString::fromLocal8Bit("´ò¿ªÒ»¸öAudibleÎÄ¼ş"),
+		"æ‰“å¼€ä¸€ä¸ªAudibleæ–‡ä»¶",
 		"C:/",
 		"Audible(*.aax *.aa)");
 	if (fileName.isEmpty())
@@ -76,11 +76,11 @@ void ConvertWidget::importFile() {
 	}
 	else {
 		
-		QMessageBox msgBox(QString::fromLocal8Bit("´íÎó"),		///--ÕâÀïÊÇÉèÖÃÏûÏ¢¿ò±êÌâ
-			QString::fromLocal8Bit("²»ÊÇÓĞĞ§µÄAudibleÎÄ¼ş"),						///--ÕâÀïÊÇÉèÖÃÏûÏ¢¿òÏÔÊ¾µÄÄÚÈİ
-			QMessageBox::Critical,							///--ÕâÀïÊÇÔÚÏûÏ¢¿òÏÔÊ¾µÄÍ¼±ê
-			QMessageBox::Ok | QMessageBox::Default,		///---ÕâÀïÊÇÏÔÊ¾ÏûÏ¢¿òÉÏµÄ°´Å¥Çé¿ö
-			QMessageBox::Cancel | QMessageBox::Escape,	///---ÕâÀïÓë ¼üÅÌÉÏµÄ escape ¼ü½áºÏ¡£µ±ÓÃ»§°´ÏÂ¸Ã¼ü£¬ÏûÏ¢¿ò½«Ö´ĞĞcancel°´Å¥ÊÂ¼ş
+		QMessageBox msgBox("é”™è¯¯",		///--è¿™é‡Œæ˜¯è®¾ç½®æ¶ˆæ¯æ¡†æ ‡é¢˜
+			"ä¸æ˜¯æœ‰æ•ˆçš„Audibleæ–‡ä»¶",						///--è¿™é‡Œæ˜¯è®¾ç½®æ¶ˆæ¯æ¡†æ˜¾ç¤ºçš„å†…å®¹
+			QMessageBox::Critical,							///--è¿™é‡Œæ˜¯åœ¨æ¶ˆæ¯æ¡†æ˜¾ç¤ºçš„å›¾æ ‡
+			QMessageBox::Ok | QMessageBox::Default,		///---è¿™é‡Œæ˜¯æ˜¾ç¤ºæ¶ˆæ¯æ¡†ä¸Šçš„æŒ‰é’®æƒ…å†µ
+			QMessageBox::Cancel | QMessageBox::Escape,	///---è¿™é‡Œä¸ é”®ç›˜ä¸Šçš„ escape é”®ç»“åˆã€‚å½“ç”¨æˆ·æŒ‰ä¸‹è¯¥é”®ï¼Œæ¶ˆæ¯æ¡†å°†æ‰§è¡ŒcancelæŒ‰é’®äº‹ä»¶
 			0);
 		msgBox.exec();
 	}

@@ -71,17 +71,17 @@ bool delDir(const QString& path)
     if (!dir.exists()) {
         return true;
     }
-    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot); //ÉèÖÃ¹ıÂË
-    QFileInfoList fileList = dir.entryInfoList(); // »ñÈ¡ËùÓĞµÄÎÄ¼şĞÅÏ¢
-    foreach(QFileInfo file, fileList) { //±éÀúÎÄ¼şĞÅÏ¢
-        if (file.isFile()) { // ÊÇÎÄ¼ş£¬É¾³ı
+    dir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot); //è®¾ç½®è¿‡æ»¤
+    QFileInfoList fileList = dir.entryInfoList(); // è·å–æ‰€æœ‰çš„æ–‡ä»¶ä¿¡æ¯
+    foreach(QFileInfo file, fileList) { //éå†æ–‡ä»¶ä¿¡æ¯
+        if (file.isFile()) { // æ˜¯æ–‡ä»¶ï¼Œåˆ é™¤
             file.dir().remove(file.fileName());
         }
-        else { // µİ¹éÉ¾³ı
+        else { // é€’å½’åˆ é™¤
             delDir(file.absoluteFilePath());
         }
     }
-    return dir.rmdir(dir.absolutePath()); // É¾³ıÎÄ¼ş¼Ğ
+    return dir.rmdir(dir.absolutePath()); // åˆ é™¤æ–‡ä»¶å¤¹
 }
 QStringList getFileNames(const QString& path)
 {
@@ -133,7 +133,7 @@ QString choosename(QString filepath) {
     }
 }
 /*
-    ÊıÖµµİÔöµÄ´´½¨Ä¿Â¼£¨Èç¹ûÄ¿Â¼ÒÑ¾­´æÔÚ£©
+    æ•°å€¼é€’å¢çš„åˆ›å»ºç›®å½•ï¼ˆå¦‚æœç›®å½•å·²ç»å­˜åœ¨ï¼‰
 */
 QString mkdir(QString path) {
     int i = 1;

@@ -52,8 +52,8 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 
 		comboFormat->addItem("mp3");
 		comboFormat->addItem("m4b");
-		comboSplit->addItem(QString::fromLocal8Bit("°´µ¥ÎÄ¼þ²ð·Ö"));
-		comboSplit->addItem(QString::fromLocal8Bit("°´ÕÂ½Ú²ð·Ö"));
+		comboSplit->addItem("æŒ‰å•æ–‡ä»¶æ‹†åˆ†");
+		comboSplit->addItem("æŒ‰ç« èŠ‚æ‹†åˆ†");
 		choiceLayout->addWidget(comboFormat);
 		choiceLayout->addItem(new QSpacerItem(50, 0, QSizePolicy::Expanding));
 		choiceLayout->addWidget(comboSplit);
@@ -84,9 +84,9 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 	buttonCheck = new QStackedWidget;
 	buttonCheck->setFixedWidth(TaskCellHeight);
 	
-	btnStart = new QPushButton(QString::fromLocal8Bit("¿ªÊ¼"));
-	btnStop = new QPushButton(QString::fromLocal8Bit("Í£Ö¹"));
-	btnReTry = new QPushButton(QString::fromLocal8Bit("ÖØÊÔ"));
+	btnStart = new QPushButton("å¼€å§‹");
+	btnStop = new QPushButton("åœæ­¢");
+	btnReTry = new QPushButton("é‡è¯•");
 	auto btnset = [](QPushButton * btn) {
 		btn->setFixedSize(TaskCellHeight - 10, 50);
 		QWidget* w = new QWidget();
@@ -97,7 +97,7 @@ TaskCellWidget::TaskCellWidget(ConvertTask* task,QWidget* parent):QWidget(parent
 	auto reTrybtnset = [](QPushButton* btn) {
 		btn->setFixedSize(TaskCellHeight - 10, 50);
 		QWidget* w = new QWidget();
-		QLabel *LabFail = new QLabel(QString::fromLocal8Bit("Ê§°Ü"));
+		QLabel *LabFail = new QLabel("å¤±è´¥");
 		LabFail->setStyleSheet("color:rgb(255,0,0)");
 		QVBoxLayout* lay1 = new QVBoxLayout(w);
 		lay1->addItem(new QSpacerItem(0,25));
