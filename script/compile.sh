@@ -9,11 +9,17 @@ if [  -d "$MY_QT_DIR" ]; then
     CMAKE_PREFIX_PATH=$MY_QT_DIR
 fi
 
+echo 选择编译模式
+if [ "$CONFIG" != "Release" ]; then
+    CONFIG=Debug
+fi
+echo "选择 $CONFIG 编译模式"
+
 echo 生成工程
 if [ $CMAKE_PREFIX_PATH ];then
     cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH"
 else
-    cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode
+    cmake -S $WORKSPACE -B "$BUILD_DIR" -G Xcode --config $CONFIG
 fi
 
 
