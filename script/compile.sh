@@ -3,6 +3,12 @@ WORKSPACE=$(cd "$(dirname "$0")";pwd)/..
 BUILD_DIR=$WORKSPACE/build
 MY_QT_DIR=/Users/czl/Qt5.12.1/5.12.1/clang_64
 
+if [ ! -d "$BUILD_DIR" ]; then
+	echo "$BUILD_DIR不存在，重新创建"
+	mkdir "$BUILD_DIR"
+fi
+
+
 echo 判断本地有否有预设的qt路径
 if [  -d "$MY_QT_DIR" ]; then
     echo "$MY_QT_DIR 存在，使用该qt"
